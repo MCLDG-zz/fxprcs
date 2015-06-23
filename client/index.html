@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en" ng-app="pricing">
+
+<head>
+  <title>Pricing</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap-responsive.min.css">
+  <script type="text/javascript" src="/controllers/tickerController.js"></script>
+  <script type="text/javascript" src="/controllers/priceController.js"></script>
+  <script type="text/javascript" src="/controllers/modalController.js"></script>
+  <script src="/js/angular-modal-service.min.js"></script>  
+  
+    <script>
+        angular.module("pricing");
+    </script>
+</head>
+
+<body>
+  <div class="container" ng-controller="tickerController">
+    <div class="page-header">
+      <h1>Pricing</h1>
+    </div>
+    <div class="row">
+      <div class="span9">
+        <table class="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th class="span2">Ticker</th>
+              <th class="span7">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="item in quotes">
+              <div highlight-on-change="{{quotes[0].price}}">
+              <td class="span2" ng-bind="item.ticker"></td>
+              <td class="span7" ng-bind="item.price"></td>
+              <td class="span7" ng-bind="quotes[0].price"></td>
+              <td><a href class="btn btn-default btn-lg " ng-click="showOrderModal()">Place Order</a></td>
+              <pre ng-show="orderModalResult">{{orderModalResult}}</pre>              
+              </div>
+            </tr>
+          </tbody>
+        </table>
+        <div class="row controls">
+          <form ng-submit="send()">
+            <div class="span2 input-append">
+              <input type="text" class="input-block-level" ng-model="newticker" placeholder="Your Ticker">
+              <input type="submit" class="span1 btn btn-primary" value="Send">
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <script src="/js/angular.min.js"></script>
+</body>
+
+</html>
