@@ -1,19 +1,18 @@
 var app = angular.module('pricing');
 
-app.controller('ModalController', [
-  '$scope', '$element', 'title', 'close', 
-  function($scope, $element, title, close) {
+app.controller('ModalCtrl', [
+  '$scope', '$element', 'title', 'close', 'quoteID',
+  function($scope, $element, title, close, quoteID) {
 
-  $scope.name = null;
-  $scope.age = null;
   $scope.title = title;
+  $scope.quoteID = quoteID;
   
   //  This close function doesn't need to use jQuery or bootstrap, because
   //  the button has the 'data-dismiss' attribute.
   $scope.close = function() {
  	  close({
-      name: $scope.name,
-      age: $scope.age
+      currencyAmountToBuy: this.currencyAmountToBuy,
+      currencyAmountToSell: this.currencyAmountToSell
     }, 500); // close, but give 500ms for bootstrap to animate
   };
 
@@ -26,8 +25,8 @@ app.controller('ModalController', [
     
     //  Now call close, returning control to the caller.
     close({
-      name: $scope.name,
-      age: $scope.age
+      currencyAmountToBuy: this.currencyAmountToBuy,
+      currencyAmountToSell: this.currencyAmountToSell
     }, 500); // close, but give 500ms for bootstrap to animate
   };
 
