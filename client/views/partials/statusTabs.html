@@ -1,0 +1,40 @@
+<div class="container" ng-controller="tickerCtrl">
+    
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="active">
+          <a href="#openorders" role="tab" data-toggle="tab">
+              <icon class="fa fa-home"></icon> Open Orders
+          </a>
+      </li>
+      <li><a href="#quotes" role="tab" data-toggle="tab">
+          <i class="fa fa-user"></i> Quotes
+          </a>
+      </li>
+      <li>
+          <a href="#pendingorders" role="tab" data-toggle="tab">
+              <i class="fa fa-envelope"></i> Pending Orders
+          </a>
+      </li>
+      <li>
+          <a href="#notifications" role="tab" data-toggle="tab">
+              <i class="fa fa-cog"></i> Notifications
+          </a>
+      </li>
+    </ul>
+    
+    <!-- Tab panes -->
+    <div class="tab-content">
+      <div class="tab-pane fade active in" id="openorders">
+          <ng-include src="'views/partials/widgets/openorders.html'"></ng-include>
+      </div>
+      <div class="tab-pane fade" id="quotes">
+          <ng-include src="'views/partials/widgets/quotes.html'"></ng-include>
+      </div>
+      <div class="tab-pane fade" id="pendingorders">
+      </div>
+      <div class="tab-pane fade" id="notifications">
+      </div>
+    </div>
+    
+</div>

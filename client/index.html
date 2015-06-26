@@ -4,37 +4,43 @@
 <head>
   <title>Pricing</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/styles/bootstrap.min.css">
-  <link rel="stylesheet" href="/styles/bootstrap.css">
-  <link rel="stylesheet" href="/styles/bootstrap-responsive.min.css">
-  <script type="text/javascript" src="/scripts/controllers/tickerController.js"></script>
-  <script type="text/javascript" src="/scripts/controllers/priceController.js"></script>
-  <script type="text/javascript" src="/scripts/controllers/modalController.js"></script>
-  <script type="text/javascript" src="/scripts/directives/priceQuoteDirective.js"></script>
-
-  <script>
-    angular.module("pricing");
-  </script>
+  <link rel="stylesheet" href="/libs/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/libs/bootstrap/css/bootstrap.css">
+  <link rel="styleSheet" href="/libs/ui-grid/css/ui-grid.css"/>
 </head>
 
 <body ng-controller="tickerCtrl">
 
-  <div><a href class="btn btn-default btn-lg " ng-click="addQuoteWidget()">Add Quote</a></div>
+
+    <div class="navbar navbar-inverse">
+        <a class="navbar-brand" href="#">FX TRADING</a>
+      <div><a href class="btn btn-default btn-lg " ng-click="addQuoteWidget()">Add Quote</a></div>
+    </div>
 
   <div id="quotewidgets">
     <!-- this area is dynamically populated with quote widgets - see priceQuoteDirective.js and tickerController.js -->
-
     <div ng-repeat="widget in quotewidgetcoll.quotewidgetobject" ng-class="{'selected-object': $index == selectedObjectIndex}">
       <a href class="btn btn-default" ng-class="{'selected-object': $index == selectedObjectIndex}" ng-click="closeQuoteWidget($index)">Close</a>
       <div quotewidgetdirective></div>
     </div>
-
   </div>
+  
+  <ng-include src="'views/partials/statusTabs.html'"></ng-include>
+
+{{openOrders}}
+{{quotes}}
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/scripts/js/jquery.min.js"></script>
-  <script src="/scripts/js/bootstrap.min.js"></script>
+  <script src="/libs/jquery/jquery.min.js"></script>
+  <script src="/libs/bootstrap/js/bootstrap.js"></script>
+  <script src="/libs/angular/angular.js"></script>
   <script src="/scripts/js/angular-modal-service.min.js"></script>
-  <script src="/scripts/js/angular.js"></script>
+  <script src="/libs/ui-grid/js/ui-grid.js"></script>
+
+  <script src="/scripts/controllers/tickerController.js"></script>
+  <script src="/scripts/controllers/priceController.js"></script>
+  <script src="/scripts/controllers/modalController.js"></script>
+  <script src="/scripts/directives/priceQuoteDirective.js"></script>
+
 </body>
 
 </html>

@@ -6,7 +6,7 @@
   </script>
   <div class="container" ng-controller="tickerCtrl">
     <div class="page-header">
-      <h2>Price Quote</h2>
+      <h4>Price Quote</h4>
     </div>
 
     <div class="row">
@@ -22,7 +22,9 @@
                   </div>
                 </form>
               </th>
-              <th><a href class="btn btn-success" ng-click="showOrderModal(newticker)">Place Order</a></th>
+              <th class="span2">
+                <a href class="btn btn-success" ng-click="showOrderModal(newticker)">Place Order</a>
+              </th>
             </tr>
           </thead>
           <tbody>

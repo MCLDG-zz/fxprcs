@@ -3,25 +3,36 @@
     <div class="modal-content" ng-controller="tickerCtrl">
       <div class="modal-header">
         <button type="button" class="close" ng-click="close()" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title">ID: {{quoteID}} - Order for {{quotes[quoteID].ticker}}</h4>
+        <h4 class="modal-title">{{title}}</h4>
       </div>
       <div class="modal-body">
-        <p>Order for {{quotes[quoteID].ticker}} at {{quotes[quoteID].price}} ID: {{quoteID}} {{quotes}} {{quotes[quoteID]}}</p>
+        <div ng-repeat="item in quotes | filter:tickerID">
+          <h5>Order to buy {{item.ticker}} at {{item.price}}</h5> Item filtered by ticker: {{item}}
+        </div>
+        Selected Ticker:{{tickerID}} Selected Price: {{tickerPrice}}
 
-		<form class="form-horizontal" role="form">
-		  <div class="form-group">
-		    <label for="currencyAmountToBuy" class="col-sm-2 control-label">Currency Amount to Buy</label>
-		    <div class="col-sm-10">
-		      <input type="text" class="form-control" id="name" placeholder="Currency to Buy" ng-model="currencyAmountToBuy">
-		    </div>
-		  </div>
-		  <div class="form-group">
-		    <label for="currencyAmountToSell" class="col-sm-2 control-label">Currency Amount to Sell</label>
-		    <div class="col-sm-10">
-		      <input type="text" class="form-control" id="name" placeholder="Currency to Sell" ng-model="currencyAmountToSell">
-		    </div>
-		  </div>
-		</form>
+        <form class="form-horizontal" role="form" ng-submit="handleOpenOrderFormSubmit()">
+          <div class="form-group">
+            <label for="currencyAmountToBuy" class="col-sm-2 control-label">Currency Amount to Buy</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="name" placeholder="Currency to Buy" ng-model="currencyAmountToBuy">
+              <input type="text" class="form-control" id="name" placeholder="Currency to Buy" ng-model="order.currencyAmountToBuy">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="currencyAmountToSell" class="col-sm-2 control-label">Currency Amount to Sell</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="name" placeholder="Currency to Sell" ng-model="currencyAmountToSell">
+              <input type="text" class="form-control" id="name" placeholder="Currency to Buy" ng-model="order.currencyAmountToSell">
+            </div>
+          </div>
+          {{order}}
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="button" ng-click="close()" class="btn btn-primary" data-dismiss="modal">OK</button>
+            <button type="button" ng-click="cancel()" class="btn">Cancel</button>
+          </div>
+        </form>
 
       </div>
       <div class="modal-footer">
