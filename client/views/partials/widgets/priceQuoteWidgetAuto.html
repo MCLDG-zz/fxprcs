@@ -9,25 +9,16 @@
     <table class="table table-striped table-bordered table table-condensed table-responsive">
       <thead>
         <tr>
-          <th>
-            <form ng-submit="send()">
-              <div class="input-group">
-                <input type="text" class="input-block-level form-control" ng-model="newticker" placeholder="Ticker">
-                <span class="input-group-btn">
-                  <input type="submit" class="btn btn-primary btn-xs form-control" value="Search">
-                </span>
-              </div>
-            </form>
-          </th>
-          <th class="span2">
-            <a href class="btn btn-success btn-xs" ng-click="showOrderModal(newticker)">Place Order</a>
-          </th>
+          <th colspan="3">Place an Order</th>
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="item in quotes | filter:newticker" ng-show="newticker">
+        <tr ng-repeat="item in quotes">
           <td class="span2" ng-bind="item.ticker"></td>
           <td class="span2" ng-bind="item.price"></td>
+          <td class="span2">
+            <a href class="btn btn-success btn-xs" ng-click="showOrderModal(item.ticker)">Place Order</a>
+          </td>
           <pre ng-show="orderModalResult">{{orderModalResult}}</pre>
         </tr>
       </tbody>

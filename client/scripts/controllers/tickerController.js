@@ -17,7 +17,8 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', 'ModalService', 
     };
     $scope.selectedObjectIndex = null;
     $scope.orderForDebug = null;
-    //$scope.quoteID = null;
+    //Quotes to be displayed upon initialisation
+    $scope.tickerList = ["USDAUD", "AUDNZD", "USDEUR", "GBPUSD", "USDJPY", "USDCHF", "USDCAD", "USDNZD", "GBPJPY"];
 
 
     socket.on('quote', function(data) {
@@ -25,7 +26,7 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', 'ModalService', 
         $scope.price = data.price;
         $scope.ticker = data.ticker;
         //Determine whether a quote already exists for this ticker. If so, replace it
-        
+
         /*
         TODO: OK, it seems that Angular 1.4 has removed the automatic alphabetic sorting of the collection
         before providing it to ng-repeat; it is now sorted by 'key in Obj' by the browser, which usually results
@@ -55,14 +56,13 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', 'ModalService', 
         var data = {};
         data.ticker = $scope.newticker.toUpperCase();
         $scope.quotes.push(data);
-        //$scope.newticker = '';
     };
 
 
     $scope.showOrderModal = function(ticker) {
 
         var getQuoteID = null;
-        for (var i=0; i < $scope.quotes.length; i++) {
+        for (var i = 0; i < $scope.quotes.length; i++) {
             if ($scope.quotes[i].ticker == ticker.toUpperCase()) {
                 getQuoteID = i;
                 break;
@@ -81,14 +81,16 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', 'ModalService', 
         }).then(function(modal) {
             modal.element.modal();
             modal.close.then(function(result) {
-                $scope.orderModalResult = "Order successful. You have bought " + result.currencyAmountToBuy + " of " +  $scope.quotes[getQuoteID].ticker + " at a price of " + $scope.quotes[getQuoteID].price;
+                $scope.orderModalResult = "Order successful. You have bought " + result.order.currencyAmountToBuy + " of " + $scope.quotes[getQuoteID].ticker + " at a price of " + $scope.quotes[getQuoteID].price;
                 //'result' only has scope within this function. The 'push' pushes by reference (I guess)
                 //so once the function completes 'result' disappears and the openOrders array 
                 //will contain nothing
-                //So - do a deep copy by value instead.
+                //So - do a deep copy by value instead - which also doesn't work :-( 
                 var orderCopy = {};
                 angular.copy(result.order, orderCopy);
-                $scope.orderForDebug = {'greeting':'hello'};
+                $scope.orderForDebug = {
+                    'greeting': 'hello'
+                };
                 $scope.openOrders.push(orderCopy);
 
                 $timeout(function() {
@@ -116,4 +118,16 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', 'ModalService', 
     $scope.selectObject = function($index) {
         $scope.selectedObjectIndex = $index;
     };
+
+    //This function will execute once the controller is initialised. It will populate
+    //quotes, which will be displayed (by priceQuoteDirective) on the main page.
+    $scope.init = function() {
+        for (var i = 0; i < $scope.tickerList.length; i++) {
+            $scope.newticker = $scope.tickerList[i];
+            $scope.send();
+        }
+    }
+    $scope.init();
+
+
 }]);
