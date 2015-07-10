@@ -1,4 +1,4 @@
-var app = angular.module('pricing', ['angularModalService', 'ui.grid']);
+var app = angular.module('pricing', ['angularModalService', 'ui.grid', 'ui.router']);
 
 app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', 'ModalService', function($scope, $timeout, $compile, ModalService) {
     var socket = io.connect();
@@ -126,8 +126,53 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', 'ModalService', 
             $scope.newticker = $scope.tickerList[i];
             $scope.send();
         }
-    }
+    };
+    
+    //Run the init function on startup
     $scope.init();
-
-
 }]);
+
+// Configure the navigation and routing
+app.config(function($stateProvider, $urlRouterProvider) {
+    
+    $urlRouterProvider.otherwise('/home');
+    
+    $stateProvider
+        
+        // HOME STATES AND NESTED VIEWS ========================================
+        .state('home', {
+            url: '/home',
+            templateUrl: 'partial-home.html'
+        })
+        
+        .state('openorders', {
+            url: '/openorders',
+            templateUrl: 'views/partials/openorders.html'
+        })
+        
+        .state('pendingorders', {
+            url: '/pendingorders',
+            templateUrl: 'views/partials/pendingorders.html'
+        })
+        
+        .state('watchlist', {
+            url: '/watchlist',
+            templateUrl: 'views/partials/watchlist.html'
+        })
+        
+        .state('balance', {
+            url: '/balance',
+            templateUrl: 'views/partials/balance.html'
+        })
+        
+        .state('notifications', {
+            url: '/notifications',
+            templateUrl: 'views/partials/notifications.html'
+        })
+        
+        // ABOUT PAGE AND MULTIPLE NAMED VIEWS =================================
+        .state('about', {
+            // we'll get to this in a bit       
+        });
+        
+});
