@@ -7,23 +7,26 @@ app.controller('ModalCtrl', [
     $scope.title = title;
     $scope.tickerID = tickerID;
     $scope.tickerPrice = tickerPrice;
+    $scope.data = {};
 
     $scope.handleOpenOrderFormSubmit = function() {
-      var data = this.order;
+      var orderData = this.data;
+      //orderData = this.data.concat([{ticker: tickerID, price: tickerPrice}]);
+      angular.extend( {'ticker': tickerID, 'price': tickerPrice}, orderData);
 
       /* post to server*/
       //$http.post(url, data);      
       
       //  Manually hide the modal.
       $element.modal('hide');
-      
+
       close({
         /* 
         While compiling the Form angular created the 'order' object
         which converts the form data to JSON automatically, so return this to the 
         caller
         */
-        order: this.order
+        order: orderData 
       }, 500); // close, but give 500ms for bootstrap to animate
     }
 

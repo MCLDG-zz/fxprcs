@@ -88,10 +88,19 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', 'ModalService', 
                 //So - do a deep copy by value instead - which also doesn't work :-( 
                 var orderCopy = {};
                 angular.copy(result.order, orderCopy);
-                $scope.orderForDebug = {
+                $scope.$parent.$parent.orderForDebug = {
                     'greeting': 'hello'
                 };
-                $scope.openOrders.push(orderCopy);
+                //I spent so much time on this. It seems that the Modal makes a copy of the
+                //$scope, and if you update this in the Modal it will be lost when the Modal
+                //closes. So I had to push the order onto the parent scope object to ensure
+                //it is still there after the Modal close.
+                //However, in the view (the HTML), I had to refer to it using $parent also
+                //If I did not use $parent the openOrders array was simply empty
+                $scope.$parent.openOrders.push(result.order);
+                //$scope.openOrders.push(orderCopy);
+                //openOrders.push(orderCopy);
+
 
                 $timeout(function() {
                     $scope.orderModalResult = false;
@@ -127,52 +136,52 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', 'ModalService', 
             $scope.send();
         }
     };
-    
+
     //Run the init function on startup
     $scope.init();
 }]);
 
 // Configure the navigation and routing
 app.config(function($stateProvider, $urlRouterProvider) {
-    
+
     $urlRouterProvider.otherwise('/home');
-    
+
     $stateProvider
-        
-        // HOME STATES AND NESTED VIEWS ========================================
+
+    // HOME STATES AND NESTED VIEWS ========================================
         .state('home', {
-            url: '/home',
-            templateUrl: 'partial-home.html'
-        })
-        
-        .state('openorders', {
-            url: '/openorders',
-            templateUrl: 'views/partials/openorders.html'
-        })
-        
-        .state('pendingorders', {
-            url: '/pendingorders',
-            templateUrl: 'views/partials/pendingorders.html'
-        })
-        
-        .state('watchlist', {
-            url: '/watchlist',
-            templateUrl: 'views/partials/watchlist.html'
-        })
-        
-        .state('balance', {
-            url: '/balance',
-            templateUrl: 'views/partials/balance.html'
-        })
-        
-        .state('notifications', {
-            url: '/notifications',
-            templateUrl: 'views/partials/notifications.html'
-        })
-        
-        // ABOUT PAGE AND MULTIPLE NAMED VIEWS =================================
-        .state('about', {
-            // we'll get to this in a bit       
-        });
-        
+        url: '/home',
+        templateUrl: 'partial-home.html'
+    })
+
+    .state('openorders', {
+        url: '/openorders',
+        templateUrl: 'views/partials/openorders.html'
+    })
+
+    .state('pendingorders', {
+        url: '/pendingorders',
+        templateUrl: 'views/partials/pendingorders.html'
+    })
+
+    .state('watchlist', {
+        url: '/watchlist',
+        templateUrl: 'views/partials/watchlist.html'
+    })
+
+    .state('balance', {
+        url: '/balance',
+        templateUrl: 'views/partials/balance.html'
+    })
+
+    .state('notifications', {
+        url: '/notifications',
+        templateUrl: 'views/partials/notifications.html'
+    })
+
+    // ABOUT PAGE AND MULTIPLE NAMED VIEWS =================================
+    .state('about', {
+        // we'll get to this in a bit       
+    });
+
 });

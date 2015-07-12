@@ -7,16 +7,41 @@
       </div>
       <div class="modal-body">
         <div ng-repeat="item in quotes | filter:tickerID">
-          <h5>Order to buy {{item.ticker}} at {{tickerPrice}}</h5> 
+          <h5>Order to buy {{item.ticker}} at {{tickerPrice}}</h5>
         </div>
 
         <form class="form-horizontal" role="form" ng-submit="handleOpenOrderFormSubmit()">
           <div class="form-group">
-            <label for="currencyAmountToBuy" class="col-sm-2 control-label">Currency Amount to Buy</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" id="name" placeholder="Currency to Buy" ng-model="order.currencyAmountToBuy">
+
+            <div class="well">
+              <div class="radio" ng-repeat="button in ['Market', 'Limit']">
+                <label>
+                  <input type="radio" ng-model="data.mode" value="{{button}}" ng-checked="first" /> {{button}}
+                </label>
+              </div>
             </div>
+            <div ng-switch on="data.mode">
+              <div ng-switch-when="Market">
+                <label for="currencyAmountToBuy" class="col-sm-2 control-label">Currency Amount to Buy</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="name" placeholder="Currency to Buy" ng-model="data.currencyAmountToBuy">
+                </div>
+              </div>
+
+              <div ng-switch-when="Limit">
+                <label for="currencyAmountToBuy" class="col-sm-2 control-label">Currency Amount to Buy</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="name" placeholder="Currency to Buy" ng-model="data.currencyAmountToBuy">
+                </div>
+                <label for="limitPrice" class="col-sm-2 control-label">Limit Price</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="name" placeholder="Limit Price" ng-model="data.limitPrice">
+                </div>
+              </div>
+            </div>
+
           </div>
+
           <div class="modal-footer">
             <button type="submit" class="btn btn-primary">Submit</button>
             <button type="button" ng-click="close()" class="btn btn-primary" data-dismiss="modal">OK</button>
@@ -24,10 +49,6 @@
           </div>
         </form>
 
-      </div>
-      <div class="modal-footer">
-        <button type="button" ng-click="close()" class="btn btn-primary" data-dismiss="modal">OK</button>
-        <button type="button" ng-click="cancel()" class="btn">Cancel</button>
       </div>
     </div>
   </div>
