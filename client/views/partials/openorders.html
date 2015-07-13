@@ -3,6 +3,6 @@ I have not figured out why I need to refer to openOrders using the $parent scope
 Perhaps my understanding of $scope is limited; I have to push to the openOrders array using 
 $parent, and refer to it here using $parent otherwise the array is empty
 -->
-<div ng-controller="tickerCtrl">
-  <div ui-grid="{ data: $parent.openOrders }" class="grid">{{$parent.openOrders}}</div>
+<div ng-controller="tickerCtrl" ng-init="loadOrders()">
+  <div ui-grid="{ data: orders }" class="grid"></div>
 </div>

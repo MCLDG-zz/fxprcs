@@ -1,4 +1,3 @@
 <div ng-controller="tickerCtrl">
-    {{pendingOrders}}
-  <div ui-grid="{ data: pendingOrders }" class="grid">{{pendingOrders}}</div>
+  <div ui-grid="{ data: $parent.openOrders }" class="grid">{{$parent.openOrders | filter:mode:Limit}}</div>
 </div>

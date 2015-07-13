@@ -1,6 +1,6 @@
 var app = angular.module('pricing', ['angularModalService', 'ui.grid', 'ui.router']);
 
-app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', 'ModalService', function($scope, $timeout, $compile, ModalService) {
+app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', 'ModalService', function($scope, $timeout, $compile, $http, ModalService) {
     var socket = io.connect();
 
     $scope.quote = {};
@@ -11,6 +11,8 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', 'ModalService', 
     $scope.newticker = '';
     $scope.ticker = '';
     $scope.price = '';
+    $scope.balance = {};
+    $scope.orders = [];
     $scope.orderModalResult = null;
     $scope.quotewidgetcoll = {
         quotewidgetobject: []
@@ -126,6 +128,26 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', 'ModalService', 
 
     $scope.selectObject = function($index) {
         $scope.selectedObjectIndex = $index;
+    };
+
+    $scope.loadBalance = function() {
+        var httpReq = $http.get('/balance/balance').
+        success(function(data, status, headers, config) {
+            $scope.balance = data;
+        }).
+        error(function(data, status, headers, config) {
+            $scope.balance = {"error retrieving balance":status};
+        });
+    };
+
+    $scope.loadOrders = function() {
+        var httpReq = $http.get('/orders/order').
+        success(function(data, status, headers, config) {
+            $scope.orders = data;
+        }).
+        error(function(data, status, headers, config) {
+            $scope.orders = {"error retrieving orders":status};
+        });
     };
 
     //This function will execute once the controller is initialised. It will populate

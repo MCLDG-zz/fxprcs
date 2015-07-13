@@ -1,15 +1,57 @@
 var http = require('http');
-var path = require('path');
-
 var async = require('async');
 var socketio = require('socket.io');
 var express = require('express');
+var path = require('path');
+var favicon = require('serve-favicon');
+var logger = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
+var mongo = require('mongodb');
+var monk = require('monk');
+var db = monk('localhost:27017/fxdealing');
 
-var router = express();
-var server = http.createServer(router);
+var routes = require('./routes/index');
+var balance = require('./routes/balance');
+var orders = require('./routes/orders');
+
+var app = express();
+var server = http.createServer(app);
 var io = socketio.listen(server);
 
-router.use(express.static(path.resolve(__dirname, 'client')));
+// view engine setup
+//app.set('views', path.join(__dirname, 'client/views'));
+//app.set('view engine', 'jade');
+
+// uncomment after placing your favicon in /public
+//app.use(favicon(__dirname + '/public/favicon.ico'));
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded());
+app.use(cookieParser());
+//app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.resolve(__dirname, 'client')));
+
+
+// Make our db accessible to our router
+app.use(function(req,res,next){
+    req.db = db;
+    next();
+});
+
+app.use('/', routes);
+app.use('/balance', balance);
+app.use('/orders', orders);
+
+/// catch 404 and forwarding to error handler
+app.use(function(req, res, next) {
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
+});
+
+module.exports = app;
+
 var tickers = [];
 var sockets = [];
 var FETCH_INTERVAL = 5000;
@@ -157,5 +199,5 @@ function sendFXQuoteToClients(socket, ticker) {
 
 server.listen(process.env.PORT || 3000, process.env.IP || "0.0.0.0", function() {
 	var addr = server.address();
-	console.log("Chat server listening at", addr.address + ":" + addr.port);
+	console.log("Server listening at", addr.address + ":" + addr.port);
 });
