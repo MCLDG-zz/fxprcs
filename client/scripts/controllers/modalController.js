@@ -24,7 +24,12 @@ app.controller('ModalCtrl', [
       }, orderData);
 
       /* post to server*/
-      $http.post('/orders/addorder', fullOrder);      
+      if (orderData.mode == "Market") {
+        $http.post('/orders/addorder', fullOrder);
+      }
+      else {
+        $http.post('/orders/addpendingorder', fullOrder);
+      }
 
       //  Manually hide the modal.
       $element.modal('hide');

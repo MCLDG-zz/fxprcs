@@ -6,7 +6,8 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', 'ModalS
     $scope.quote = {};
     $scope.quotedata = {};
     $scope.quotes = [];
-    $scope.openOrders = [];
+//    $scope.openOrders = [];
+    $scope.pendingOrders = [];
     $scope.tickers = [];
     $scope.newticker = '';
     $scope.ticker = '';
@@ -20,8 +21,10 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', 'ModalS
     $scope.selectedObjectIndex = null;
     $scope.orderForDebug = null;
     //Quotes to be displayed upon initialisation
-    $scope.tickerList = ["USDAUD", "AUDNZD", "USDEUR", "GBPUSD", "USDJPY", "USDCHF", "USDCAD", "USDNZD", "GBPJPY"];
-
+    //$scope.tickerList = ["USDAUD", "AUDNZD", "USDEUR", "GBPUSD", "USDJPY", "USDCHF", "USDCAD", "USDNZD", "GBPJPY"];
+    $scope.tickerList = [];
+    $scope.symbolID = null;
+    $scope.notifications = [];
 
     socket.on('quote', function(data) {
         $scope.quote = data;
@@ -49,17 +52,41 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', 'ModalS
         }
         $scope.$apply();
         $scope.quote = {};
+        
+        $scope.triggerPendingOrders(data);
     });
 
     $scope.send = function send() {
         socket.emit('ticker', $scope.newticker);
-        $scope.tickers.push($scope.newticker);
+        //$scope.tickers.push($scope.newticker);
         //push onto the quotes array to ensure it displays on page, even if no valid quote exists for this ticker
         var data = {};
         data.ticker = $scope.newticker.toUpperCase();
         $scope.quotes.push(data);
     };
 
+    /*
+    * Loop through all pending orders. If triggered by
+    * the new quote we have just received, convert pending order  
+    * to open order at the quote price
+    */
+    $scope.triggerPendingOrders = function (newQuote) {
+        for (var i = 0; i < $scope.pendingOrders.length; i++) {
+            if ($scope.pendingOrders[i].ticker == newQuote.ticker &&
+                Number($scope.pendingOrders[i].limitPrice) > Number(newQuote.price)) {
+                $scope.pendingOrders[i].price = newQuote.price;
+                //Convert to open order and remove the pending order now that it's fulfilled
+                $http.post('/orders/delpendingorder', $scope.pendingOrders[i]);
+                $http.post('/orders/addorder', $scope.pendingOrders[i]);
+                $scope.orders.push($scope.pendingOrders[i]);
+                $scope.pendingOrders.splice(i,1);
+
+                //Notify user
+                $scope.notifications.push("Pending order fulfilled for ticker: " + newQuote.ticker + " at price: " + newQuote.price);
+                $http.post('/users/addnotification', {"notification": "Pending order fulfilled for ticker: " + newQuote.ticker + " at price: " + newQuote.price});
+            }
+        }
+    };
 
     $scope.showOrderModal = function(ticker) {
 
@@ -84,25 +111,26 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', 'ModalS
             modal.element.modal();
             modal.close.then(function(result) {
                 $scope.orderModalResult = "Order successful. You have bought " + result.order.currencyAmountToBuy + " of " + $scope.quotes[getQuoteID].ticker + " at a price of " + $scope.quotes[getQuoteID].price;
-                //'result' only has scope within this function. The 'push' pushes by reference (I guess)
-                //so once the function completes 'result' disappears and the openOrders array 
-                //will contain nothing
-                //So - do a deep copy by value instead - which also doesn't work :-( 
-                var orderCopy = {};
-                angular.copy(result.order, orderCopy);
-                $scope.$parent.$parent.orderForDebug = {
-                    'greeting': 'hello'
-                };
                 //I spent so much time on this. It seems that the Modal makes a copy of the
                 //$scope, and if you update this in the Modal it will be lost when the Modal
                 //closes. So I had to push the order onto the parent scope object to ensure
                 //it is still there after the Modal close.
                 //However, in the view (the HTML), I had to refer to it using $parent also
                 //If I did not use $parent the openOrders array was simply empty
-                $scope.$parent.openOrders.push(result.order);
-                //$scope.openOrders.push(orderCopy);
-                //openOrders.push(orderCopy);
-
+//                $scope.$parent.openOrders.push(result.order);
+                if (result.order.mode == 'Limit') {
+                    $scope.pendingOrders.push(result.order);
+                    $scope.$parent.pendingOrders.push(result.order);
+                    // We need to get back the pending order from the DB with it's _id value
+                    // For 2 reasons:
+                    // 1) Each time we receive a quote, pending orders may be triggered. This
+                    // takes place on the client (it should be on server, but I'll move it later)
+                    // 2) After a pending order is triggered the pending order is deleted. This 
+                    // requires the _id column from the DB
+                    $scope.loadPendingOrders();
+                } else {
+                    $scope.updateBalance($scope.balance);
+                }
 
                 $timeout(function() {
                     $scope.orderModalResult = false;
@@ -131,12 +159,34 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', 'ModalS
     };
 
     $scope.loadBalance = function() {
-        var httpReq = $http.get('/balance/balance').
+        var httpReq = $http.get('/users/balance').
         success(function(data, status, headers, config) {
             $scope.balance = data;
         }).
         error(function(data, status, headers, config) {
-            $scope.balance = {"error retrieving balance":status};
+            $scope.balance = {
+                "error retrieving balance": status
+            };
+        });
+    };
+
+    $scope.updateBalance = function() {
+        var httpReq = $http.post('/users/updatebalance', $scope.balance).
+        success(function(data, status, headers, config) {
+        }).
+        error(function(data, status, headers, config) {
+        });
+    };
+
+    $scope.loadNotifications = function() {
+        var httpReq = $http.get('/users/notification').
+        success(function(data, status, headers, config) {
+            $scope.notifications = data;
+        }).
+        error(function(data, status, headers, config) {
+            $scope.notifications = {
+                "error retrieving notifications": status
+            };
         });
     };
 
@@ -146,17 +196,51 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', 'ModalS
             $scope.orders = data;
         }).
         error(function(data, status, headers, config) {
-            $scope.orders = {"error retrieving orders":status};
+            $scope.orders = {
+                "error retrieving orders": status
+            };
         });
     };
 
-    //This function will execute once the controller is initialised. It will populate
+    $scope.loadPendingOrders = function() {
+        var httpReq = $http.get('/orders/pendingorder').
+        success(function(data, status, headers, config) {
+            $scope.pendingOrders = data;
+        }).
+        error(function(data, status, headers, config) {
+            $scope.pendingOrders = {
+                "error retrieving pending orders": status
+            };
+        });
+    };
+
+    //This function will load the watchlist from Mongodb, then populate
     //quotes, which will be displayed (by priceQuoteDirective) on the main page.
+    $scope.loadWatchlist = function() {
+        var httpReq = $http.get('/users/watchlist').
+        success(function(data, status, headers, config) {
+
+            //For some reason this method is called more than once during init(). So
+            //if the array is already populated I will not populate it again.
+            if ($scope.tickerList.length == 0) {
+                $scope.tickerList = data[0].watchlist;
+                for (var i = 0; i < $scope.tickerList.length; i++) {
+                    $scope.newticker = $scope.tickerList[i];
+                    $scope.send();
+                }
+            }
+        }).
+        error(function(data, status, headers, config) {
+            $scope.tickerList = {
+                "error retrieving watchlist": status
+            };
+        });
+    };
+
+    //This function will execute once the controller is initialised. 
     $scope.init = function() {
-        for (var i = 0; i < $scope.tickerList.length; i++) {
-            $scope.newticker = $scope.tickerList[i];
-            $scope.send();
-        }
+        $scope.loadWatchlist();
+        $scope.loadPendingOrders();
     };
 
     //Run the init function on startup
@@ -173,7 +257,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
     // HOME STATES AND NESTED VIEWS ========================================
         .state('home', {
         url: '/home',
-        templateUrl: 'partial-home.html'
+        templateUrl: 'views/partials/watchlist.html'
     })
 
     .state('openorders', {
@@ -201,6 +285,19 @@ app.config(function($stateProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/notifications.html'
     })
 
+    .state('chart', {
+        url: '/chart',
+        templateUrl: 'views/partials/widgets/chartWidget.html'
+    })
+
+    .state('showsymbol', {
+        url: '/showsymbol/:symbolID',
+        templateUrl: 'views/partials/showsymbol.html',
+        controller: function ($scope, $stateParams) {
+            $scope.symbolID = $stateParams.symbolID;
+        }
+    })
+ 
     // ABOUT PAGE AND MULTIPLE NAMED VIEWS =================================
     .state('about', {
         // we'll get to this in a bit       

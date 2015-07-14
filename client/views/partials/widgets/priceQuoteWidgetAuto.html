@@ -1,4 +1,4 @@
-<div id="pricequotewidget" ng-controller="tickerCtrl">
+<div id="pricequotewidget">
   <script type="text/javascript" src="/scripts/controllers/tickerController.js"></script>
   <script type="text/javascript" src="/scripts/directives/priceQuoteDirective.js"></script>
   <script>
@@ -9,12 +9,12 @@
     <table class="table table-striped table-bordered table table-condensed table-responsive">
       <thead>
         <tr>
-          <th colspan="3">Place an Order</th>
+          <th colspan="3">Watchlist</th>
         </tr>
       </thead>
       <tbody>
         <tr ng-repeat="item in quotes">
-          <td class="span2" ng-bind="item.ticker"></td>
+          <td><a href="#/showsymbol/{{item.ticker}}" ui-sref="showsymbol({symbolID: item.ticker})" class="span2" ng-bind="item.ticker"></a></td>
           <td class="span2" ng-bind="item.price"></td>
           <td class="span2">
             <a href class="btn btn-success btn-xs" ng-click="showOrderModal(item.ticker)">Place Order</a>

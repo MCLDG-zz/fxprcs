@@ -14,6 +14,8 @@ var db = monk('localhost:27017/fxdealing');
 var routes = require('./routes/index');
 var balance = require('./routes/balance');
 var orders = require('./routes/orders');
+var users = require('./routes/users');
+//var symbol = require('./routes/symbol');
 
 var app = express();
 var server = http.createServer(app);
@@ -42,6 +44,8 @@ app.use(function(req,res,next){
 app.use('/', routes);
 app.use('/balance', balance);
 app.use('/orders', orders);
+app.use('/users', users);
+//app.use('/symbol', symbol);
 
 /// catch 404 and forwarding to error handler
 app.use(function(req, res, next) {
