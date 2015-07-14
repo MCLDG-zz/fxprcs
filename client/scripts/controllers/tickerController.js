@@ -25,6 +25,7 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', 'ModalS
     $scope.tickerList = [];
     $scope.symbolID = null;
     $scope.notifications = [];
+    $scope.news = {};
 
     socket.on('quote', function(data) {
         $scope.quote = data;
@@ -56,6 +57,10 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', 'ModalS
         $scope.triggerPendingOrders(data);
     });
 
+    socket.on('news', function(data) {
+        $scope.news = data;
+    });
+
     $scope.send = function send() {
         socket.emit('ticker', $scope.newticker);
         //$scope.tickers.push($scope.newticker);
@@ -79,11 +84,17 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', 'ModalS
                 $http.post('/orders/delpendingorder', $scope.pendingOrders[i]);
                 $http.post('/orders/addorder', $scope.pendingOrders[i]);
                 $scope.orders.push($scope.pendingOrders[i]);
-                $scope.pendingOrders.splice(i,1);
 
                 //Notify user
-                $scope.notifications.push("Pending order fulfilled for ticker: " + newQuote.ticker + " at price: " + newQuote.price);
-                $http.post('/users/addnotification', {"notification": "Pending order fulfilled for ticker: " + newQuote.ticker + " at price: " + newQuote.price});
+                $scope.notifications.push({"ticker": newQuote.ticker, "price": newQuote.price, 
+                    "fulfilDate": new Date(), "limitPrice": $scope.pendingOrders[i].limitPrice,
+                    "message": "Pending order fulfilled"});
+                $http.post('/users/addnotification', {"ticker": newQuote.ticker, "price": newQuote.price, 
+                    "fulfilDate": new Date(), "limitPrice": $scope.pendingOrders[i].limitPrice,
+                    "message": "Pending order fulfilled"});
+
+                //remove the pending order
+                $scope.pendingOrders.splice(i,1);
             }
         }
     };
@@ -283,6 +294,11 @@ app.config(function($stateProvider, $urlRouterProvider) {
     .state('notifications', {
         url: '/notifications',
         templateUrl: 'views/partials/notifications.html'
+    })
+
+    .state('news', {
+        url: '/news',
+        templateUrl: 'views/partials/news.html'
     })
 
     .state('chart', {

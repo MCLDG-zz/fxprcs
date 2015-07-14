@@ -10,6 +10,7 @@ var bodyParser = require('body-parser');
 var mongo = require('mongodb');
 var monk = require('monk');
 var db = monk('localhost:27017/fxdealing');
+var xml2js = require('xml2js');
 
 var routes = require('./routes/index');
 var balance = require('./routes/balance');
@@ -36,9 +37,9 @@ app.use(express.static(path.resolve(__dirname, 'client')));
 
 
 // Make our db accessible to our router
-app.use(function(req,res,next){
-    req.db = db;
-    next();
+app.use(function(req, res, next) {
+	req.db = db;
+	next();
 });
 
 app.use('/', routes);
@@ -49,9 +50,9 @@ app.use('/users', users);
 
 /// catch 404 and forwarding to error handler
 app.use(function(req, res, next) {
-    var err = new Error('Not Found');
-    err.status = 404;
-    next(err);
+	var err = new Error('Not Found');
+	err.status = 404;
+	next(err);
 });
 
 module.exports = app;
@@ -59,6 +60,7 @@ module.exports = app;
 var tickers = [];
 var sockets = [];
 var FETCH_INTERVAL = 5000;
+var NEWS_FETCH_INTERVAL = 30000;
 
 io.on('connection', function(socket) {
 
@@ -92,7 +94,7 @@ function trackTicker(socket, ticker) {
 	else {
 		sendEquityQuoteToClients(socket, ticker);
 	}
-
+	
 	//Every N seconds
 	var timer = setInterval(function() {
 		if (fx) {
@@ -102,6 +104,11 @@ function trackTicker(socket, ticker) {
 			sendEquityQuoteToClients(socket, ticker);
 		}
 	}, FETCH_INTERVAL);
+
+	//Every N seconds
+	var timerNews = setInterval(function() {
+		sendFXNewsToClients(socket);
+	}, NEWS_FETCH_INTERVAL);
 
 	socket.on('disconnect', function() {
 		clearInterval(timer);
@@ -159,11 +166,9 @@ function sendEquityQuoteToClients(socket, ticker) {
 }
 
 function sendFXQuoteToClients(socket, ticker) {
-	var url =	'http://query.yahooapis.com/v1/public/yql?q=select * from yahoo.finance.xchange where pair in ("' 
-					+ ticker + '")&format=json&env=store://datatables.org/alltableswithkeys';
+	var url = 'http://query.yahooapis.com/v1/public/yql?q=select * from yahoo.finance.xchange where pair in ("' + ticker + '")&format=json&env=store://datatables.org/alltableswithkeys';
 
-	http.get(url
-	, function(response) {
+	http.get(url, function(response) {
 		response.setEncoding('utf8');
 		console.log("http response = " + response.url + response.statusCode);
 		var data = "";
@@ -185,7 +190,7 @@ function sendFXQuoteToClients(socket, ticker) {
 					console.log(e + " " + data);
 					return;
 				}
-
+				
 				var quote = {};
 				quote.ticker = data_object.query.results.rate.id;
 				quote.bid = data_object.query.results.rate.Bid;
@@ -200,6 +205,54 @@ function sendFXQuoteToClients(socket, ticker) {
 	});
 }
 
+function sendFXNewsToClients(socket) {
+	var url = 'http://articlefeeds.nasdaq.com/nasdaq/categories?category=Forex%20and%20Currencies&format=xml';
+
+	http.get(url, function(response) {
+		response.setEncoding('utf8');
+		console.log("http response = " + response.url + response.statusCode);
+		var data = "";
+
+		response.on('data', function(chunk) {
+			data += chunk;
+		});
+
+		response.on('error', function(error) {
+			console.log("error on http get = " + error);
+		});
+
+		response.on('end', function() {
+			if (data.length > 0) {
+				var news_object = null;
+				//try sending back raw XML and see if browser can render it
+				news_object = data;
+				/*
+				var parser = new xml2js.Parser();
+				try {
+					parser.parseString(data, function(err, result) {
+						news_object = JSON.stringify(result);
+					});
+				}
+				catch (e) {
+					console.log(e + " " + data);
+					return;
+				}
+				*/
+				/*
+				var quote = {};
+				quote.ticker = data_object.query.results.rate.id;
+				quote.bid = data_object.query.results.rate.Bid;
+				quote.ask = data_object.query.results.rate.Ask;
+				quote.rate = data_object.query.results.rate.Rate;
+				quote.price = data_object.query.results.rate.Rate;
+				quote.date = data_object.query.results.rate.Date;
+				quote.time = data_object.query.results.rate.Time;
+				*/
+				socket.emit('news', news_object);
+			}
+		});
+	});
+}
 
 server.listen(process.env.PORT || 3000, process.env.IP || "0.0.0.0", function() {
 	var addr = server.address();

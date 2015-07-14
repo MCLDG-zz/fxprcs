@@ -16,6 +16,7 @@
     "async": "~0.2.8",
     "socket.io": "~0.9.14",
     "mongodb": "",
-    "monk": ""
+    "monk": "",
+    "xml2js": ""
   }
 }
