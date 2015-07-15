@@ -13,8 +13,13 @@ router.get('/balance', function(req, res) {
 /* Update balance */
 router.post('/updatebalance', function(req, res) {
     var db = req.db;
+    var id = req.body._id;
+    var body = req.body;
+    delete body._id;
+    
     var collection = db.get('userbalance');
-    collection.findAndModify(req.body._id, { $set: { cashbalance : '55'}}, function(err, result){
+    collection.findAndModify({ "_id": id }, { "$set": body },
+        function(err, result){
         res.send(
             (err === null) ? { msg: '' } : { msg: err }
         );

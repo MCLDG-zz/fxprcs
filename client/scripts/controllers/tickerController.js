@@ -80,10 +80,18 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', 'ModalS
             if ($scope.pendingOrders[i].ticker == newQuote.ticker &&
                 Number($scope.pendingOrders[i].limitPrice) > Number(newQuote.price)) {
                 $scope.pendingOrders[i].price = newQuote.price;
+                
                 //Convert to open order and remove the pending order now that it's fulfilled
                 $http.post('/orders/delpendingorder', $scope.pendingOrders[i]);
                 $http.post('/orders/addorder', $scope.pendingOrders[i]);
                 $scope.orders.push($scope.pendingOrders[i]);
+                
+                //Update user's balance
+                $scope.balance[0].netunsettled -= (Number($scope.pendingOrders[i].currencyAmountToBuy) * Number($scope.pendingOrders[i].price));
+                $scope.balance[0].cashbalance -= (Number($scope.pendingOrders[i].currencyAmountToBuy) * Number($scope.pendingOrders[i].price));
+                $scope.balance[0].assetvalue += (Number($scope.pendingOrders[i].currencyAmountToBuy) * Number($scope.pendingOrders[i].price));
+                $scope.updateBalance();
+
 
                 //Notify user
                 $scope.notifications.push({"ticker": newQuote.ticker, "price": newQuote.price, 
@@ -130,17 +138,22 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', 'ModalS
                 //If I did not use $parent the openOrders array was simply empty
 //                $scope.$parent.openOrders.push(result.order);
                 if (result.order.mode == 'Limit') {
-                    $scope.pendingOrders.push(result.order);
-                    $scope.$parent.pendingOrders.push(result.order);
+                    //$scope.pendingOrders.push(result.order);
+                    //$scope.$parent.pendingOrders.push(result.order);
                     // We need to get back the pending order from the DB with it's _id value
                     // For 2 reasons:
                     // 1) Each time we receive a quote, pending orders may be triggered. This
                     // takes place on the client (it should be on server, but I'll move it later)
                     // 2) After a pending order is triggered the pending order is deleted. This 
                     // requires the _id column from the DB
+                    $scope.balance[0].netunsettled += (Number(result.order.currencyAmountToBuy) * Number($scope.quotes[getQuoteID].price));
+                    $scope.updateBalance();
                     $scope.loadPendingOrders();
                 } else {
-                    $scope.updateBalance($scope.balance);
+                    //Update the user's balance
+                    $scope.balance[0].cashbalance -= (Number(result.order.currencyAmountToBuy) * Number($scope.quotes[getQuoteID].price));
+                    $scope.balance[0].assetvalue += (Number(result.order.currencyAmountToBuy) * Number($scope.quotes[getQuoteID].price));
+                    $scope.updateBalance();
                 }
 
                 $timeout(function() {
@@ -182,7 +195,7 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', 'ModalS
     };
 
     $scope.updateBalance = function() {
-        var httpReq = $http.post('/users/updatebalance', $scope.balance).
+        var httpReq = $http.post('/users/updatebalance', $scope.balance[0]).
         success(function(data, status, headers, config) {
         }).
         error(function(data, status, headers, config) {
@@ -252,6 +265,7 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', 'ModalS
     $scope.init = function() {
         $scope.loadWatchlist();
         $scope.loadPendingOrders();
+        $scope.loadBalance();
     };
 
     //Run the init function on startup
