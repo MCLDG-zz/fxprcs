@@ -15,7 +15,7 @@
           </th>
         </tr>
       </thead>
-      <tbody ng-repeat="item in quotes | filter:{ ticker: symbolID }">
+      <tbody ng-repeat="item in quotes | filter:{ ticker: symbolID } track by $index" class="list">
         <tr>
           <tr>
             <td>Symbol</td>
@@ -23,7 +23,7 @@
           </tr>
           <tr>
             <td>Price</td>
-            <td class="span2">{{item.price}}</td>
+            <td highlighter="item.price" class="span2">{{item.price}}</td>
           </tr>
           <tr>
             <td>Bid</td>

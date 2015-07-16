@@ -39,7 +39,6 @@ app.controller('ModalCtrl', [
       }, 500); // close, but give 500ms for bootstrap to animate
     }
 
-
     //  This close function doesn't need to use jQuery or bootstrap, because
     //  the button has the 'data-dismiss' attribute.
     $scope.close = function() {

@@ -70,6 +70,11 @@ io.on('connection', function(socket) {
 		var ticker = String(msg || '');
 		trackTicker(socket, ticker);
 	});
+
+	socket.on('error', function(msg) {
+		console.log("Socket.io error. Message: " + msg);
+	});
+	
 });
 
 function trackTicker(socket, ticker) {
@@ -105,7 +110,8 @@ function trackTicker(socket, ticker) {
 		}
 	}, FETCH_INTERVAL);
 
-	//Every N seconds
+	//Send news on startup and every N seconds
+	sendFXNewsToClients(socket);
 	var timerNews = setInterval(function() {
 		sendFXNewsToClients(socket);
 	}, NEWS_FETCH_INTERVAL);
@@ -191,6 +197,10 @@ function sendFXQuoteToClients(socket, ticker) {
 					return;
 				}
 				
+				//ensure the response contains a valid quote
+				if (!data_object.query.results) {
+					return;
+				}
 				var quote = {};
 				quote.ticker = data_object.query.results.rate.id;
 				quote.bid = data_object.query.results.rate.Bid;
@@ -223,21 +233,21 @@ function sendFXNewsToClients(socket) {
 
 		response.on('end', function() {
 			if (data.length > 0) {
-				var news_object = null;
-				//try sending back raw XML and see if browser can render it
+				var news_object = {};
 				news_object = data;
-				/*
 				var parser = new xml2js.Parser();
 				try {
 					parser.parseString(data, function(err, result) {
-						news_object = JSON.stringify(result);
+						//news_object = JSON.stringify(result);
+						//news_object = JSON.parse(result);
+						news_object = result;
 					});
 				}
 				catch (e) {
-					console.log(e + " " + data);
+					console.log("Error building news feed message: " + e );
 					return;
 				}
-				*/
+				
 				/*
 				var quote = {};
 				quote.ticker = data_object.query.results.rate.id;

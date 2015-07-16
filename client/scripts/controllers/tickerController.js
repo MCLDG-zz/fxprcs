@@ -1,14 +1,13 @@
 var app = angular.module('pricing', ['angularModalService', 'ui.grid', 'ui.router']);
 
-app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', 'ModalService', function($scope, $timeout, $compile, $http, ModalService) {
+app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state', 'ModalService', function($scope, $timeout, $compile, $http, $state, ModalService) {
     var socket = io.connect();
 
     $scope.quote = {};
     $scope.quotedata = {};
     $scope.quotes = [];
-//    $scope.openOrders = [];
+    //    $scope.openOrders = [];
     $scope.pendingOrders = [];
-    $scope.tickers = [];
     $scope.newticker = '';
     $scope.ticker = '';
     $scope.price = '';
@@ -22,15 +21,34 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', 'ModalS
     $scope.orderForDebug = null;
     //Quotes to be displayed upon initialisation
     //$scope.tickerList = ["USDAUD", "AUDNZD", "USDEUR", "GBPUSD", "USDJPY", "USDCHF", "USDCAD", "USDNZD", "GBPJPY"];
-    $scope.tickerList = [];
+    $scope.tickerList = {};
     $scope.symbolID = null;
     $scope.notifications = [];
     $scope.news = {};
 
     socket.on('quote', function(data) {
+        //Before accepting a quote we must confirm that the ticker is on the watchlist. If
+        //the user is not interested in watching this ticker, we will ignore the quote
+        //first, ensure the watchlist exists
+        if (!$scope.tickerList.watchlist) {
+            return;
+        }
+        var arrayLength = $scope.tickerList.watchlist.length;
+        var tickerFound = false;
+        for (var i = 0; i < arrayLength; i++) {
+            if ($scope.tickerList.watchlist[i] == data.ticker) {
+                tickerFound = true;
+                break;
+            }
+        }
+        if (!tickerFound) {
+            return;
+        }
+
         $scope.quote = data;
         $scope.price = data.price;
         $scope.ticker = data.ticker;
+
         //Determine whether a quote already exists for this ticker. If so, replace it
 
         /*
@@ -39,8 +57,8 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', 'ModalS
         in the keys sorted in the order in which they were added. If an item is replaced, like I do below, it
         may cause the order to change
         */
-        var arrayLength = $scope.quotes.length;
-        var tickerFound = false;
+        arrayLength = $scope.quotes.length;
+        tickerFound = false;
         for (var i = 0; i < arrayLength; i++) {
             if ($scope.quotes[i].ticker == $scope.ticker) {
                 $scope.quotes[i] = data;
@@ -53,7 +71,7 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', 'ModalS
         }
         $scope.$apply();
         $scope.quote = {};
-        
+
         $scope.triggerPendingOrders(data);
     });
 
@@ -63,7 +81,6 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', 'ModalS
 
     $scope.send = function send() {
         socket.emit('ticker', $scope.newticker);
-        //$scope.tickers.push($scope.newticker);
         //push onto the quotes array to ensure it displays on page, even if no valid quote exists for this ticker
         var data = {};
         data.ticker = $scope.newticker.toUpperCase();
@@ -71,21 +88,21 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', 'ModalS
     };
 
     /*
-    * Loop through all pending orders. If triggered by
-    * the new quote we have just received, convert pending order  
-    * to open order at the quote price
-    */
-    $scope.triggerPendingOrders = function (newQuote) {
+     * Loop through all pending orders. If triggered by
+     * the new quote we have just received, convert pending order  
+     * to open order at the quote price
+     */
+    $scope.triggerPendingOrders = function(newQuote) {
         for (var i = 0; i < $scope.pendingOrders.length; i++) {
             if ($scope.pendingOrders[i].ticker == newQuote.ticker &&
                 Number($scope.pendingOrders[i].limitPrice) > Number(newQuote.price)) {
                 $scope.pendingOrders[i].price = newQuote.price;
-                
+
                 //Convert to open order and remove the pending order now that it's fulfilled
                 $http.post('/orders/delpendingorder', $scope.pendingOrders[i]);
                 $http.post('/orders/addorder', $scope.pendingOrders[i]);
                 $scope.orders.push($scope.pendingOrders[i]);
-                
+
                 //Update user's balance
                 $scope.balance[0].netunsettled -= (Number($scope.pendingOrders[i].currencyAmountToBuy) * Number($scope.pendingOrders[i].price));
                 $scope.balance[0].cashbalance -= (Number($scope.pendingOrders[i].currencyAmountToBuy) * Number($scope.pendingOrders[i].price));
@@ -94,15 +111,23 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', 'ModalS
 
 
                 //Notify user
-                $scope.notifications.push({"ticker": newQuote.ticker, "price": newQuote.price, 
-                    "fulfilDate": new Date(), "limitPrice": $scope.pendingOrders[i].limitPrice,
-                    "message": "Pending order fulfilled"});
-                $http.post('/users/addnotification', {"ticker": newQuote.ticker, "price": newQuote.price, 
-                    "fulfilDate": new Date(), "limitPrice": $scope.pendingOrders[i].limitPrice,
-                    "message": "Pending order fulfilled"});
+                $scope.notifications.push({
+                    "ticker": newQuote.ticker,
+                    "price": newQuote.price,
+                    "fulfilDate": new Date(),
+                    "limitPrice": $scope.pendingOrders[i].limitPrice,
+                    "message": "Pending order fulfilled"
+                });
+                $http.post('/users/addnotification', {
+                    "ticker": newQuote.ticker,
+                    "price": newQuote.price,
+                    "fulfilDate": new Date(),
+                    "limitPrice": $scope.pendingOrders[i].limitPrice,
+                    "message": "Pending order fulfilled"
+                });
 
                 //remove the pending order
-                $scope.pendingOrders.splice(i,1);
+                $scope.pendingOrders.splice(i, 1);
             }
         }
     };
@@ -136,7 +161,7 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', 'ModalS
                 //it is still there after the Modal close.
                 //However, in the view (the HTML), I had to refer to it using $parent also
                 //If I did not use $parent the openOrders array was simply empty
-//                $scope.$parent.openOrders.push(result.order);
+                //                $scope.$parent.openOrders.push(result.order);
                 if (result.order.mode == 'Limit') {
                     //$scope.pendingOrders.push(result.order);
                     //$scope.$parent.pendingOrders.push(result.order);
@@ -149,7 +174,8 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', 'ModalS
                     $scope.balance[0].netunsettled += (Number(result.order.currencyAmountToBuy) * Number($scope.quotes[getQuoteID].price));
                     $scope.updateBalance();
                     $scope.loadPendingOrders();
-                } else {
+                }
+                else {
                     //Update the user's balance
                     $scope.balance[0].cashbalance -= (Number(result.order.currencyAmountToBuy) * Number($scope.quotes[getQuoteID].price));
                     $scope.balance[0].assetvalue += (Number(result.order.currencyAmountToBuy) * Number($scope.quotes[getQuoteID].price));
@@ -196,10 +222,8 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', 'ModalS
 
     $scope.updateBalance = function() {
         var httpReq = $http.post('/users/updatebalance', $scope.balance[0]).
-        success(function(data, status, headers, config) {
-        }).
-        error(function(data, status, headers, config) {
-        });
+        success(function(data, status, headers, config) {}).
+        error(function(data, status, headers, config) {});
     };
 
     $scope.loadNotifications = function() {
@@ -246,10 +270,10 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', 'ModalS
 
             //For some reason this method is called more than once during init(). So
             //if the array is already populated I will not populate it again.
-            if ($scope.tickerList.length == 0) {
-                $scope.tickerList = data[0].watchlist;
-                for (var i = 0; i < $scope.tickerList.length; i++) {
-                    $scope.newticker = $scope.tickerList[i];
+            if (!$scope.tickerList.watchlist || $scope.tickerList.watchlist.length == 0) {
+                $scope.tickerList = data[0];
+                for (var i = 0; i < $scope.tickerList.watchlist.length; i++) {
+                    $scope.newticker = $scope.tickerList.watchlist[i];
                     $scope.send();
                 }
             }
@@ -258,6 +282,110 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', 'ModalS
             $scope.tickerList = {
                 "error retrieving watchlist": status
             };
+        });
+    };
+
+    /*
+     * remove item from watchlist
+     */
+    $scope.removeFromWatchlist = function(ticker) {
+        //Firstly, remove the ticker from the tickerList and update the DB
+        for (var i = 0; i < $scope.tickerList.watchlist.length; i++) {
+            if (ticker == $scope.tickerList.watchlist[i]) {
+                $scope.tickerList.watchlist.splice(i, 1);
+                break;
+            }
+        }
+        var httpReq = $http.post('/users/updatewatchlist', $scope.tickerList).
+        success(function(data, status, headers, config) {
+            //if successful, remove from the quotes array - this will impact the 
+            //display on the Watchlist page, which is bound to the quotes array
+            for (var i = 0; i < $scope.quotes.length; i++) {
+                if (ticker == $scope.quotes[i].ticker) {
+                    $scope.quotes.splice(i, 1);
+                    break;
+                }
+            }
+
+        }).
+        error(function(data, status, headers, config) {});
+
+        //
+    };
+
+    /*
+     * remove item from watchlist
+     */
+    $scope.addToWatchlist = function(ticker) {
+        //If ticker is already in watchlist, no action required
+        for (var i = 0; i < $scope.tickerList.watchlist.length; i++) {
+            if (ticker == $scope.tickerList.watchlist[i]) {
+                return;
+            }
+        }
+
+        //Otherwise, add to the watchlist and update the DB
+        $scope.tickerList.watchlist.push(ticker);
+        var httpReq = $http.post('/users/updatewatchlist', $scope.tickerList).
+        success(function(data, status, headers, config) {
+            //if successful, send to server to obtain a quote, and add to the quotes array 
+            // - this will impact the display on the Watchlist page, which is bound to the quotes array
+            $scope.newticker = ticker;
+            $scope.send();
+        }).
+        error(function(data, status, headers, config) {});
+
+        //
+    };
+
+    /*
+    Grid options for pending orders
+    */
+    var removePendingOrderButtonTemplate = '<button type="button" id="removeRow" class="btn btn-danger btn-xs btn-block" ng-click="getExternalScopes().removePendingOrderRow()">Cancel</button>';
+    $scope.gridOptionsPendingOrder = {
+        data: 'pendingOrders',
+        columnDefs: [{
+            field: 'ticker',
+            displayName: 'Symbol'
+        }, {
+            field: 'price',
+            displayName: 'Price'
+        }, {
+            field: 'limitPrice',
+            displayName: 'Limit Price'
+        }, {
+            field: 'currencyAmountToBuy',
+            displayName: 'Units to Buy'
+        }, {
+            field: 'remove',
+            displayName: '',
+            cellTemplate: removePendingOrderButtonTemplate
+        }]
+    };
+
+    $scope.removePendingOrderRow = function($event, row) {
+        $event.stopPropagation();
+        $scope.pendingOrders.splice($scope.pendingOrders.indexOf(entity), 1);
+    };
+
+    $scope.gridScope = {
+        removePendingOrderRow: function() {
+            var index = $scope.pendingOrders.indexOf(row.entity);
+            $scope.pendingOrders.splice(index, 1);
+        }
+    };
+
+    $scope.removeFirstRow = function() {
+        //if($scope.gridOpts.data.length > 0){
+        $scope.pendingOrders.splice(0, 1);
+        //}
+    };
+
+    $scope.handleSearchSymbolSubmit = function() {
+        var symbolToSearch = this.data.symbolToSearch;
+
+        $state.go('showsymbol', {
+            symbolID: symbolToSearch
         });
     };
 
@@ -323,14 +451,52 @@ app.config(function($stateProvider, $urlRouterProvider) {
     .state('showsymbol', {
         url: '/showsymbol/:symbolID',
         templateUrl: 'views/partials/showsymbol.html',
-        controller: function ($scope, $stateParams) {
+        controller: function($scope, $stateParams) {
             $scope.symbolID = $stateParams.symbolID;
         }
     })
- 
+
     // ABOUT PAGE AND MULTIPLE NAMED VIEWS =================================
     .state('about', {
         // we'll get to this in a bit       
     });
 
+});
+
+/*
+This will highlight an element passed to the directive when the value
+of the bound value changes, for example:
+
+        <tr data-ng-repeat="item in quotes track by $index" class="list">
+          <td highlighter="item.price" class="span2">{{item.price}}</td>
+        </tr>
+
+In this case, whenever item.price changes the element will be highlighted
+
+The 'track by $index' is required, otherwise the directive does not work. If 
+you have a filter it must be applied before the 'track by $index', as follows,
+otherwise the filter will not be applied:
+
+      <tbody ng-repeat="item in quotes | filter:{ ticker: symbolID } track by $index" class="list">
+
+*/
+app.directive('highlighter', function($timeout) {
+    return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+            scope.$watch(attrs.highlighter, function(nv, ov) {
+                if (nv !== ov) {
+                    var newclass = nv < ov ? 'highlight-red' : 'highlight-green';
+
+                    // apply class
+                    element.addClass(newclass);
+
+                    // auto remove after some delay
+                    $timeout(function() {
+                        element.removeClass(newclass);
+                    }, 1000);
+                }
+            });
+        }
+    };
 });
