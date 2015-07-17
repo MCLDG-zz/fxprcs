@@ -1,12 +1,13 @@
 var app = angular.module('pricing', ['angularModalService', 'ui.grid', 'ui.router']);
 
-app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state', 'ModalService', function($scope, $timeout, $compile, $http, $state, ModalService) {
+app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state', '$sce', 'ModalService', 
+    function($scope, $timeout, $compile, $http, $state, $sce, ModalService) {
+        
     var socket = io.connect();
 
     $scope.quote = {};
     $scope.quotedata = {};
     $scope.quotes = [];
-    //    $scope.openOrders = [];
     $scope.pendingOrders = [];
     $scope.newticker = '';
     $scope.ticker = '';
@@ -14,6 +15,7 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
     $scope.balance = {};
     $scope.orders = [];
     $scope.orderModalResult = null;
+    $scope.addWatchlistResult = null;
     $scope.quotewidgetcoll = {
         quotewidgetobject: []
     };
@@ -30,6 +32,7 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
         //Before accepting a quote we must confirm that the ticker is on the watchlist. If
         //the user is not interested in watching this ticker, we will ignore the quote
         //first, ensure the watchlist exists
+        /*
         if (!$scope.tickerList.watchlist) {
             return;
         }
@@ -44,7 +47,7 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
         if (!tickerFound) {
             return;
         }
-
+        */
         $scope.quote = data;
         $scope.price = data.price;
         $scope.ticker = data.ticker;
@@ -154,7 +157,17 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
         }).then(function(modal) {
             modal.element.modal();
             modal.close.then(function(result) {
-                $scope.orderModalResult = "Order successful. You have bought " + result.order.currencyAmountToBuy + " of " + $scope.quotes[getQuoteID].ticker + " at a price of " + $scope.quotes[getQuoteID].price;
+                var orderType = result.order.mode;
+                if (orderType == "Market") {
+                    $scope.orderModalResult = $sce.trustAsHtml("<strong>Order for " + $scope.quotes[getQuoteID].ticker + " successful.</strong>" +
+                        " You have bought " + result.order.currencyAmountToBuy + " units of " + $scope.quotes[getQuoteID].ticker + 
+                        " at a price of " + $scope.quotes[getQuoteID].price);
+                } else {
+                    $scope.orderModalResult = $sce.trustAsHtml("<strong>Pending order for " + $scope.quotes[getQuoteID].ticker + " created.</strong>" +
+                        " You are waiting to buy " + result.order.currencyAmountToBuy + " units of " + $scope.quotes[getQuoteID].ticker + 
+                        " at a price of " + $scope.quotes[getQuoteID].price + " or better");
+                    
+                }
                 //I spent so much time on this. It seems that the Modal makes a copy of the
                 //$scope, and if you update this in the Modal it will be lost when the Modal
                 //closes. So I had to push the order onto the parent scope object to ensure
@@ -162,7 +175,7 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
                 //However, in the view (the HTML), I had to refer to it using $parent also
                 //If I did not use $parent the openOrders array was simply empty
                 //                $scope.$parent.openOrders.push(result.order);
-                if (result.order.mode == 'Limit') {
+                if (orderType == 'Limit') {
                     //$scope.pendingOrders.push(result.order);
                     //$scope.$parent.pendingOrders.push(result.order);
                     // We need to get back the pending order from the DB with it's _id value
@@ -184,7 +197,7 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
 
                 $timeout(function() {
                     $scope.orderModalResult = false;
-                }, 5000);
+                }, 10000);
             });
         });
     };
@@ -212,6 +225,7 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
         var httpReq = $http.get('/users/balance').
         success(function(data, status, headers, config) {
             $scope.balance = data;
+            $scope.balance[0].accountvalue = Number(data[0].cashbalance) + Number(data[0].assetvalue);
         }).
         error(function(data, status, headers, config) {
             $scope.balance = {
@@ -320,6 +334,8 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
         //If ticker is already in watchlist, no action required
         for (var i = 0; i < $scope.tickerList.watchlist.length; i++) {
             if (ticker == $scope.tickerList.watchlist[i]) {
+                $scope.addWatchlistResult = $sce.trustAsHtml("<strong> " + ticker + "</strong> is already in your watchlist");
+                $timeout(function() {$scope.addWatchlistResult = false;}, 5000);
                 return;
             }
         }
@@ -383,9 +399,26 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
 
     $scope.handleSearchSymbolSubmit = function() {
         var symbolToSearch = this.data.symbolToSearch;
+        
+        //Add the symbol to 'quotes' so that prices are fetched from the server
+        //Do not add to watchlist (tickerList)
+        $scope.newticker = symbolToSearch;
+        $scope.send();
+
 
         $state.go('showsymbol', {
             symbolID: symbolToSearch
+        });
+    };
+
+    $scope.showChart = function(ticker) {
+
+        //Add the symbol to 'quotes' so that prices are fetched from the server
+        //Do not add to watchlist (tickerList)
+        $scope.symbolID = ticker;
+
+        $state.go('chart', {
+            symbolID: ticker
         });
     };
 
@@ -496,6 +529,16 @@ app.directive('highlighter', function($timeout) {
                         element.removeClass(newclass);
                     }, 1000);
                 }
+            });
+        }
+    };
+});
+
+app.filter('inWatchlistArray', function($filter){
+    return function(list, arrayFilter, element){
+        if(arrayFilter){
+            return $filter("filter")(list, function(listItem){
+                return arrayFilter.indexOf(listItem[element]) != -1;
             });
         }
     };

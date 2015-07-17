@@ -13,7 +13,8 @@
         </tr>
       </thead>
       <tbody>
-        <tr data-ng-repeat="item in quotes track by $index" class="list">
+        <tr data-ng-repeat='item in quotes | inWatchlistArray:tickerList.watchlist:"ticker" track by $index' class="list">
+<!--        <tr data-ng-repeat="item in quotes track by $index" class="list"> -->
           <td><a href="#/showsymbol/{{item.ticker}}" ui-sref="showsymbol({symbolID: item.ticker})" class="span2" ng-bind="item.ticker"></a></td>
           <td highlighter="item.price" class="span2" ng-bind="item.price">{{item.price}}</td>
           <td class="span1">
@@ -22,7 +23,7 @@
           <td class="span1">
             <a href class="btn btn-danger btn-xs" ng-click="removeFromWatchlist(item.ticker)">Remove</a>
           </td>
-          <pre ng-show="orderModalResult">{{orderModalResult}}</pre>
+          <pre class="alert alert-success fade in" ng-bind-html="orderModalResult" ng-show="orderModalResult"></pre>
         </tr>
       </tbody>
     </table>

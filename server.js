@@ -74,8 +74,12 @@ io.on('connection', function(socket) {
 	socket.on('error', function(msg) {
 		console.log("Socket.io error. Message: " + msg);
 	});
-	
 });
+
+io.on('error', function(msg) {
+	console.log("Socket.io listener error. Message: " + msg);
+});
+
 
 function trackTicker(socket, ticker) {
 	if (!ticker)

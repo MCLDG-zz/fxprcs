@@ -2,21 +2,25 @@
   <div class="col-xs-12 col-md-12">
     <!--    <div class="row center-block col-xs-12 col-sm-12 col-md-12 col-lg-12"> -->
 
+    <pre class="alert alert-success fade in" ng-bind-html="orderModalResult" ng-show="orderModalResult"></pre>
+    <pre class="alert alert-warning fade in" ng-bind-html="addWatchlistResult" ng-show="addWatchlistResult"></pre>
     <table class="table table-striped table-bordered table table-condensed table-responsive">
       <thead>
         <tr>
           <th colspan="3">Details for {{symbolID}}
             <a href class="btn btn-success btn-xs" ng-click="addToWatchlist(symbolID)">Add to Watchlist</a>
-            <a ui-sref="chart">
+            <!--<a ui-sref="chart">-->
               <button class="btn btn-success btn-xs" ng-click="showChart(symbolID)">Chart</button>
-            </a>
+            <!--</a>-->
             <a href class="btn btn-success btn-xs" ng-click="showOrderModal(symbolID)">Place Order</a>
-            <pre ng-show="orderModalResult">{{orderModalResult}}</pre>
           </th>
         </tr>
       </thead>
       <tbody ng-repeat="item in quotes | filter:{ ticker: symbolID } track by $index" class="list">
         <tr>
+          <tr>
+            <td colspan="2" class="text-muted text-center">Real-time quote. Last update: {{item.date}} {{item.time}} EST</td>
+          </tr>
           <tr>
             <td>Symbol</td>
             <td class="span2">{{item.ticker}}</td>
@@ -36,10 +40,6 @@
           <tr>
             <td>Rate</td>
             <td class="span2">{{item.rate}}</td>
-          </tr>
-          <tr>
-            <td>Quote Date/Time</td>
-            <td class="span2">{{item.date}} {{item.time}}</td>
           </tr>
         </tr>
       </tbody>
