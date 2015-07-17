@@ -16,7 +16,7 @@
           </th>
         </tr>
       </thead>
-      <tbody ng-repeat="item in quotes | filter:{ ticker: symbolID } track by $index" class="list">
+      <tbody ng-repeat="item in quotes | filter:{ ticker: symbolID }:true track by $index" class="list">
         <tr>
           <tr>
             <td colspan="2" class="text-muted text-center">Real-time quote. Last update: {{item.date}} {{item.time}} EST</td>

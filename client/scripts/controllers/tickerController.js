@@ -60,8 +60,8 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
         in the keys sorted in the order in which they were added. If an item is replaced, like I do below, it
         may cause the order to change
         */
-        arrayLength = $scope.quotes.length;
-        tickerFound = false;
+        var arrayLength = $scope.quotes.length;
+        var tickerFound = false;
         for (var i = 0; i < arrayLength; i++) {
             if ($scope.quotes[i].ticker == $scope.ticker) {
                 $scope.quotes[i] = data;
@@ -331,6 +331,13 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
      * remove item from watchlist
      */
     $scope.addToWatchlist = function(ticker) {
+        //If symbol is invalid, do not add to watchlist
+        if (!$scope.isValidSymbol(ticker)) {
+            $scope.addWatchlistResult = $sce.trustAsHtml("<strong> " + ticker + "</strong> is invalid - cannot add to watchlist");
+            $timeout(function() {$scope.addWatchlistResult = false;}, 5000);
+            return;
+        }
+
         //If ticker is already in watchlist, no action required
         for (var i = 0; i < $scope.tickerList.watchlist.length; i++) {
             if (ticker == $scope.tickerList.watchlist[i]) {
@@ -346,8 +353,10 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
         success(function(data, status, headers, config) {
             //if successful, send to server to obtain a quote, and add to the quotes array 
             // - this will impact the display on the Watchlist page, which is bound to the quotes array
-            $scope.newticker = ticker;
-            $scope.send();
+            //$scope.newticker = ticker;
+            //$scope.send();
+            $scope.addWatchlistResult = $sce.trustAsHtml("<strong> " + ticker + "</strong> successfully added to watchlist");
+            $timeout(function() {$scope.addWatchlistResult = false;}, 5000);
         }).
         error(function(data, status, headers, config) {});
 
@@ -400,11 +409,20 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
     $scope.handleSearchSymbolSubmit = function() {
         var symbolToSearch = this.data.symbolToSearch;
         
-        //Add the symbol to 'quotes' so that prices are fetched from the server
+        //Add the symbol to 'quotes' so that 
+        //prices are fetched from the server.
         //Do not add to watchlist (tickerList)
-        $scope.newticker = symbolToSearch;
-        $scope.send();
-
+        var arrayLength = $scope.quotes.length;
+        var tickerFound = false;
+        for (var i = 0; i < arrayLength; i++) {
+            if ($scope.quotes[i].ticker == symbolToSearch) {
+             tickerFound = true;
+            }
+        }
+        if (!tickerFound) {
+            $scope.newticker = symbolToSearch;
+            $scope.send();
+        }
 
         $state.go('showsymbol', {
             symbolID: symbolToSearch
@@ -431,6 +449,21 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
 
     //Run the init function on startup
     $scope.init();
+    
+    //Supporting functions
+    /*
+     * Very primitive check to see whether the symbol is valid. If the symbol
+     * does not exist in 'quotes', deem it invalid
+     */
+    $scope.isValidSymbol = function(ticker) {
+        var arrayLength = $scope.quotes.length;
+        for (var i = 0; i < arrayLength; i++) {
+            if ($scope.quotes[i].ticker == ticker && $scope.quotes[i].price > -1) {
+                return true;
+            }
+        }
+        return false;
+    };
 }]);
 
 // Configure the navigation and routing
