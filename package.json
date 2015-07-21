@@ -14,7 +14,7 @@
     "morgan": "~1.5.3",
     "serve-favicon": "~2.2.1",
     "async": "~0.2.8",
-    "socket.io": "~0.9.14",
+    "socket.io": "",
     "mongodb": "",
     "monk": "",
     "xml2js": ""

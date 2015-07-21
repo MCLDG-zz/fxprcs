@@ -4,3 +4,16 @@
 .highlight-green {
     background-color: green;
 }
+
+.InputAddOn {
+  display: flex;
+}
+
+.InputAddOn-field {
+  flex: 1;
+  /* field styles */
+}
+
+.InputAddOn-item {
+  /* item styles */
+}

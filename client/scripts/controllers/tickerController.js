@@ -165,7 +165,7 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
                 } else {
                     $scope.orderModalResult = $sce.trustAsHtml("<strong>Pending order for " + $scope.quotes[getQuoteID].ticker + " created.</strong>" +
                         " You are waiting to buy " + result.order.currencyAmountToBuy + " units of " + $scope.quotes[getQuoteID].ticker + 
-                        " at a price of " + $scope.quotes[getQuoteID].price + " or better");
+                        " at a price of " + result.order.limitPrice + " or better");
                     
                 }
                 //I spent so much time on this. It seems that the Modal makes a copy of the
@@ -224,6 +224,11 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
     $scope.loadBalance = function() {
         var httpReq = $http.get('/users/balance').
         success(function(data, status, headers, config) {
+            //ensure we received a response
+            if (data.length < 1) {
+                return;
+            }
+
             $scope.balance = data;
             $scope.balance[0].accountvalue = Number(data[0].cashbalance) + Number(data[0].assetvalue);
         }).
@@ -282,6 +287,10 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
         var httpReq = $http.get('/users/watchlist').
         success(function(data, status, headers, config) {
 
+            //ensure we received a response
+            if (data.length < 1) {
+                return;
+            }
             //For some reason this method is called more than once during init(). So
             //if the array is already populated I will not populate it again.
             if (!$scope.tickerList.watchlist || $scope.tickerList.watchlist.length == 0) {
@@ -406,8 +415,55 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
         //}
     };
 
+
+    /*
+    Grid options for pending orders
+    */
+    $scope.gridOptionsOpenOrder = {
+        data: 'orders',
+        columnDefs: [{
+            field: 'ticker',
+            displayName: 'Symbol'
+        }, {
+            field: 'price',
+            displayName: 'Price'
+        }, {
+            field: 'limitPrice',
+            displayName: 'Limit Price'
+        }, {
+            field: 'mode',
+            displayName: 'Order Type'
+        }, {
+            field: 'currencyAmountToBuy',
+            displayName: 'Units to Buy'
+        }]
+    };
+
+    /*
+    Grid options for notifications
+    */
+    $scope.gridOptionsNotifications = {
+        data: 'notifications',
+        columnDefs: [{
+            field: 'ticker',
+            displayName: 'Symbol'
+        }, {
+            field: 'price',
+            displayName: 'Price'
+        }, {
+            field: 'fulfilDate',
+            displayName: 'Fulfill Date'
+        }, {
+            field: 'limitPrice',
+            displayName: 'Limit Price'
+        }, {
+            field: 'message',
+            displayName: 'Message'
+        }]
+    };
+
     $scope.handleSearchSymbolSubmit = function() {
-        var symbolToSearch = this.data.symbolToSearch;
+        var symbolToSearch = this.data.symbolToSearch.toUpperCase();
         
         //Add the symbol to 'quotes' so that 
         //prices are fetched from the server.
@@ -427,6 +483,16 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
         $state.go('showsymbol', {
             symbolID: symbolToSearch
         });
+    };
+
+    $scope.handleDepositFunds = function() {
+        this.showDepositFunds = false;
+        var fundsToDeposit = this.data.fundsToDeposit;
+    };
+
+    $scope.handleWithdrawFunds = function() {
+        this.showWithdrawFunds = false;
+        var fundsToWithdraw = this.data.fundsToWithdraw;
     };
 
     $scope.showChart = function(ticker) {

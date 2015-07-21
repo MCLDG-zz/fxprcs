@@ -59,7 +59,7 @@ module.exports = app;
 
 var tickers = [];
 var sockets = [];
-var FETCH_INTERVAL = 5000;
+var FETCH_INTERVAL = 3000;
 var NEWS_FETCH_INTERVAL = 30000;
 
 io.on('connection', function(socket) {
@@ -75,6 +75,22 @@ io.on('connection', function(socket) {
 		console.log("Socket.io error. Message: " + msg);
 	});
 });
+
+//I'm trying to figure out why I get this error regularly
+/*
+events.js:72
+        throw er; // Unhandled 'error' event
+              ^
+Error: connect ECONNREFUSED
+    at errnoException (net.js:905:11)
+    at Object.afterConnect [as oncomplete] (net.js:896:19)
+*/
+io.sockets.on('connection', function(conn) {
+conn.on('error', function() {
+console.log('error in io.sockets.on!');
+});
+});
+
 
 io.on('error', function(msg) {
 	console.log("Socket.io listener error. Message: " + msg);
@@ -162,14 +178,6 @@ function sendEquityQuoteToClients(socket, ticker) {
 				quote.dividend = data_object[0].div;
 				quote.yield = data_object[0].yld;
 				socket.emit('quote', quote);
-				// Now send this quote to all clients who subscribe to the ticker
-				//No need to do this. The 'timer' var above will send to every registered client
-				/*				var arrayLength = tickers.length;
-								for (var i = 0; i < arrayLength; i++) {
-									if (tickers[i].ticker == ticker) {
-										tickers[i].socket.emit('quote', quote);
-									}
-								}*/
 			}
 		});
 	});
@@ -180,7 +188,6 @@ function sendFXQuoteToClients(socket, ticker) {
 
 	http.get(url, function(response) {
 		response.setEncoding('utf8');
-		console.log("http response = " + response.url + response.statusCode);
 		var data = "";
 
 		response.on('data', function(chunk) {
@@ -224,7 +231,6 @@ function sendFXNewsToClients(socket) {
 
 	http.get(url, function(response) {
 		response.setEncoding('utf8');
-		console.log("http response = " + response.url + response.statusCode);
 		var data = "";
 
 		response.on('data', function(chunk) {

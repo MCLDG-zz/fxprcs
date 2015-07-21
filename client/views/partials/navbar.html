@@ -2,35 +2,60 @@
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse" aria-expanded="false">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <!-- <a class="navbar-brand" href="#">Home</a> -->
+            <a class="navbar-brand" href="#watchlist" ui-sref="watchlist">Watchlist</a>
         </div>
 
-
         <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav">
-                <li><a href="#" ui-sref="watchlist">Watchlist</a></li>
-                <li><a href="#" ui-sref="balance">Balance</a></li>
-                <li><a href="#" ui-sref="openorders">Open Orders</a></li>
-                <li><a href="#" ui-sref="pendingorders">Pending Orders</a></li>
-                <li><a href="#" ui-sref="notifications">Notifications</a></li>
-                <li><a href="#" ui-sref="news">News</a></li>
-            </ul>
-            <form class="navbar-form navbar-left" role="search" ng-submit="handleSearchSymbolSubmit()">
-                <div class="form-group">
-                    <input type="text" ng-model="data.symbolToSearch" class="form-control" placeholder="Search Symbol">
-                </div>
-                <button type="submit" class="btn btn-default">Search</button>
-            </form>
+        <div class="collapse navbar-collapse" id="menubar">
+
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="#">Help</a></li>
+                <li>
+                    <a href="#balance" class="hidden-xs" ui-sref="balance">Balance</a>
+                    <a href="#balance" class="visible-xs" data-toggle="collapse" data-target=".navbar-collapse">Balance</a>
+                </li>
+                <li>
+                    <a href="#openorders" class="hidden-xs" ui-sref="openorders">Open Orders</a>
+                    <a href="#openorders" class="visible-xs" data-toggle="collapse" data-target=".navbar-collapse">Open Orders</a>
+                </li>
+                <li>
+                    <a href="#pendingorders" class="hidden-xs" ui-sref="pendingorders">Pending Orders</a>
+                    <a href="#pendingorders" class="visible-xs" data-toggle="collapse" data-target=".navbar-collapse">Pending Orders</a>
+                </li>
+                <li>
+                    <a href="#notifications" class="hidden-xs" ui-sref="notifications">
+                        <span class="glyphicon glyphicon-bell" aria-hidden="true"></span>Notifications
+                    </a>
+                    <a href="#notifications" class="visible-xs" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="glyphicon glyphicon-bell" aria-hidden="true"></span>Notifications
+                    </a>
+                </li>
+                <li>
+                    <a href="#news" class="hidden-xs" ui-sref="news">
+                        <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                        News
+                    </a>
+                    <a href="#news" class="visible-xs" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                        News
+                    </a>
+                </li>
             </ul>
+
+            <!--Search box-->
+            <form class="navbar-form" role="search" ng-submit="handleSearchSymbolSubmit()">
+                <div class="InputAddOn">
+                    <button type="submit" class="btn InputAddOn-item">
+                        <span class="glyphicon glyphicon-search"></span>
+                    </button> 
+                    <input type="text" ng-model="data.symbolToSearch" class="InputAddOn-field form-control" maxlength="10" placeholder="Search Symbol">                    
+                </div>
+            </form>
         </div>
         <!-- /.navbar-collapse -->
     </div>

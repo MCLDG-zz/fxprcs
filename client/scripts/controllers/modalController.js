@@ -37,7 +37,12 @@ app.controller('ModalCtrl', [
       close({
         order: fullOrder
       }, 500); // close, but give 500ms for bootstrap to animate
-    }
+    };
+    
+    //Calculated field to hold the total order price
+    $scope.totalOrderPrice = function() { 
+      return $scope.data.currencyAmountToBuy * $scope.tickerPrice; 
+    };
 
     //  This close function doesn't need to use jQuery or bootstrap, because
     //  the button has the 'data-dismiss' attribute.
