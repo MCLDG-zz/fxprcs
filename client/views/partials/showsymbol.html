@@ -8,11 +8,21 @@
       <thead>
         <tr>
           <th colspan="3">Details for {{symbolID}}
-            <a href class="btn btn-success btn-xs" ng-click="addToWatchlist(symbolID)">Add to Watchlist</a>
-            <!--<a ui-sref="chart">-->
-              <button class="btn btn-success btn-xs" ng-click="showChart(symbolID)">Chart</button>
-            <!--</a>-->
-            <a href class="btn btn-success btn-xs" ng-click="showOrderModal(symbolID)">Place Order</a>
+            <a href class="btn btn-success btn-xs" ng-click="addToWatchlist(symbolID)" title="Add to Watchlist">
+              <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+            </a>
+            <a href class="btn btn-success btn-xs" ng-click="showChart(symbolID)" title="Show Chart">
+              <span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span>
+            </a>
+            <a href class="btn btn-success btn-xs" ng-click="showOrderModal(symbolID)" title="Place an Order">
+              <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+            </a>
+          </th>
+        </tr>
+        <tr>
+          <th colspan="3">
+              <img ng-src="{{getFlagForFirstCurrency(symbolID)}}">
+              <img ng-src="{{getFlagForSecondCurrency(symbolID)}}">
           </th>
         </tr>
       </thead>
@@ -36,6 +46,10 @@
           <tr>
             <td>Ask</td>
             <td class="span2">{{item.ask}}</td>
+          </tr>
+          <tr>
+            <td>Spread</td>
+            <td highlighter="(item.ask - item.bid) / item.ask * 100" class="span2">{{(item.ask - item.bid) / item.ask * 100 | number:4}}</td>
           </tr>
           <tr>
             <td>Rate</td>

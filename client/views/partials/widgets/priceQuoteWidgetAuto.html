@@ -6,24 +6,40 @@
   </script>
 
 
-    <table class="table table-striped table-bordered table table-condensed table-responsive">
+    <table class="table table-condensed table-responsive">
       <thead>
         <tr>
-          <th colspan="4">Watchlist</th>
+          <th colspan="1">Sybmol</th>
+          <th colspan="1">Price</th>
+          <th colspan="1">Bid</th>
+          <th colspan="1">Ask</th>
+          <th colspan="1"></th>
         </tr>
       </thead>
-      <tbody>
-        <tr data-ng-repeat='item in quotes | inWatchlistArray:tickerList.watchlist:"ticker" track by $index' class="list">
-<!--        <tr data-ng-repeat="item in quotes track by $index" class="list"> -->
-          <td><a href="#/showsymbol/{{item.ticker}}" ui-sref="showsymbol({symbolID: item.ticker})" class="span2" ng-bind="item.ticker"></a></td>
-          <td highlighter="item.price" class="span2" ng-bind="item.price">{{item.price}}</td>
-          <td class="span1">
-            <a href class="btn btn-success btn-xs" ng-click="showOrderModal(item.ticker)">Place Order</a>
+      <tbody data-ng-repeat='item in quotes | inWatchlistArray:tickerList.watchlist:"ticker" track by $index' class="list">
+        <tr>
+          <td>
+            <a href="#/showsymbol/{{item.ticker}}" ui-sref="showsymbol({symbolID: item.ticker})" class="span2" ng-bind="item.ticker"></a>
           </td>
-          <td class="span1">
+          <td backgroundhighlighter="item.price" class="span2">{{item.price}}</td>
+          <td texthighlighter="item.bid" class="span2">{{item.bid}}</td>
+          <td texthighlighter="item.ask" class="span2">{{item.ask}}</td>
+          <td class="span1" rowspan="2" style="vertical-align:middle;">
+            <a href class="btn btn-success btn-xs" ng-click="showOrderModal(item.ticker)">Order</a>
             <a href class="btn btn-danger btn-xs" ng-click="removeFromWatchlist(item.ticker)">Remove</a>
           </td>
           <pre class="alert alert-success fade in" ng-bind-html="orderModalResult" ng-show="orderModalResult"></pre>
+        </tr>
+        <tr>
+          <td>
+            <a href="#/showsymbol/{{item.ticker}}" ui-sref="showsymbol({symbolID: item.ticker})" class="span2">
+              <img ng-src="{{getFlagForFirstCurrency(item.ticker)}}">
+              <img ng-src="{{getFlagForSecondCurrency(item.ticker)}}">
+            </a>
+          </td>
+          <td class="small text-muted">Split: {{(item.ask - item.bid) / item.ask * 100 | number:4}}</td>
+          <td class="small text-muted">Low: {{::item.bid}}</td>
+          <td class="small text-muted">High: {{::item.ask}}</td>
         </tr>
       </tbody>
     </table>

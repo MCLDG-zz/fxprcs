@@ -11,7 +11,6 @@
 </head>
 
 <body ng-controller="tickerCtrl">
-
   <div id="container-fluid">
     <!--    <div class="row center-block col-xs-12 col-sm-12 col-md-12 col-lg-12"> -->
     <!-- Navigation -->
@@ -23,6 +22,7 @@
 
     <div ui-view></div>
   </div>
+  <ng-include src="'views/partials/footer.html'"></ng-include>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/libs/jquery/jquery.min.js"></script>

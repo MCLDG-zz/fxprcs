@@ -10,4 +10,5 @@ Once the server is running, open the project in the shape of 'https://projectnam
 
 TODO
 delete pending order
-
+calculate margin and add to balance page. Check margin when opening deal - possiby check on price change (margin calc)
+Order modal not very professional

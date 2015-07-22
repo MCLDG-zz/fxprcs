@@ -41,7 +41,12 @@ app.controller('ModalCtrl', [
     
     //Calculated field to hold the total order price
     $scope.totalOrderPrice = function() { 
-      return $scope.data.currencyAmountToBuy * $scope.tickerPrice; 
+      if ($scope.data.currencyAmountToBuy && $scope.tickerPrice) {
+        return $scope.data.currencyAmountToBuy * $scope.tickerPrice; 
+      } 
+      else {
+        return 0;
+      }
     };
 
     //  This close function doesn't need to use jQuery or bootstrap, because

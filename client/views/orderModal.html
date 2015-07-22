@@ -20,6 +20,29 @@
                 </label>
               </div>
             </div>
+
+            <div class="row">
+              <div class="col-xs-2"></div>
+              <div class="col-xs-8">
+                <div class="panel panel-info">
+                  <div class="panel-heading text-center">
+                    <h3 class="panel-title">You may purchase a maximum of {{balance[0].cashbalance / tickerPrice | number:0}} units</h3>
+                  </div>
+                  <div class="panel-body text-center">
+                    <div class="grid">
+                      <div class="row">
+                        <span>Your balance available for trading is: {{balance[0].cashbalance - totalOrderPrice() | currency}}</span>
+                      </div>
+                      <div class="row alert alert-danger" ng-show="balance[0].cashbalance - totalOrderPrice() < 0">
+                        <p>Your have insufficient margin to execute this trade</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xs-2"></div>
+            </div>
+
             <div ng-switch on="data.mode">
               <div ng-switch-when="Market">
                 <label for="currencyAmountToBuy" class="col-sm-4 control-label">Currency Units to Buy</label>
@@ -28,7 +51,7 @@
                 </div>
                 <label for="totalOrderPrice" class="col-sm-4 control-label">Total Amount</label>
                 <div class="col-sm-8">
-                  <input type="text" class="form-control" readonly="readonly" id="totalOrderPrice" placeholder="Total Amount"  value="{{totalOrderPrice() | currency}}" />
+                  <input type="text" class="form-control" readonly="readonly" id="totalOrderPrice" placeholder="Total Amount" value="{{totalOrderPrice() | currency}}" />
                 </div>
               </div>
 
@@ -43,7 +66,7 @@
                 </div>
                 <label for="totalOrderPrice" class="col-sm-4 control-label">Total Amount</label>
                 <div class="col-sm-8">
-                  <input type="text" class="form-control" readonly="readonly" id="totalOrderPrice" placeholder="Total Amount"  value="{{totalOrderPrice() | currency}}" />
+                  <input type="text" class="form-control" readonly="readonly" id="totalOrderPrice" placeholder="Total Amount" value="{{totalOrderPrice() | currency}}" />
                 </div>
               </div>
             </div>
