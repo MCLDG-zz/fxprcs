@@ -421,31 +421,6 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
             return "views/images/flags/" + $scope.getCountryForCurrency(secondCurrency) + ".png";
         };
 
-        /*
-        Grid options for pending orders
-        */
-        var removePendingOrderButtonTemplate = '<button type="button" id="removeRow" class="btn btn-danger btn-xs btn-block" ng-click="getExternalScopes().removePendingOrderRow()">Cancel</button>';
-        $scope.gridOptionsPendingOrder = {
-            data: 'pendingOrders',
-            columnDefs: [{
-                field: 'ticker',
-                displayName: 'Symbol'
-            }, {
-                field: 'price',
-                displayName: 'Price'
-            }, {
-                field: 'limitPrice',
-                displayName: 'Limit Price'
-            }, {
-                field: 'currencyAmountToBuy',
-                displayName: 'Units to Buy'
-            }, {
-                field: 'remove',
-                displayName: '',
-                cellTemplate: removePendingOrderButtonTemplate
-            }]
-        };
-
         $scope.removePendingOrder = function(orderID) {
                         var arrayLength = $scope.pendingOrders.length;
             var idFound = false;
@@ -459,22 +434,8 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
             }
         };
 
-        $scope.gridScope = {
-            removePendingOrderRow: function() {
-                var index = $scope.pendingOrders.indexOf(row.entity);
-                $scope.pendingOrders.splice(index, 1);
-            }
-        };
-
-        $scope.removeFirstRow = function() {
-            //if($scope.gridOpts.data.length > 0){
-            $scope.pendingOrders.splice(0, 1);
-            //}
-        };
-
-
         /*
-        Grid options for pending orders
+        Grid options for orders
         */
         $scope.gridOptionsOpenOrder = {
             data: 'orders',
