@@ -28,7 +28,8 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
         $scope.notifications = [];
         $scope.news = {};
         $scope.countryToCurrencyMap = {};
-
+        $scope.orderType = "Market";
+        
         socket.on('quote', function(data) {
             //Before accepting a quote we must confirm that the ticker is on the watchlist. If
             //the user is not interested in watching this ticker, we will ignore the quote
@@ -158,8 +159,8 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
             }).then(function(modal) {
                 modal.element.modal();
                 modal.close.then(function(result) {
-                    var orderType = result.order.mode;
-                    if (orderType == "Market") {
+                    var orderType = result.order.orderType;
+                    if (result.order.orderType == "Market") {
                         $scope.orderModalResult = $sce.trustAsHtml("<strong>Order for " + $scope.quotes[getQuoteID].ticker + " successful.</strong>" +
                             " You have bought " + result.order.currencyAmountToBuy + " units of " + $scope.quotes[getQuoteID].ticker +
                             " at a price of " + $scope.quotes[getQuoteID].price);
@@ -177,7 +178,7 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
                     //However, in the view (the HTML), I had to refer to it using $parent also
                     //If I did not use $parent the openOrders array was simply empty
                     //                $scope.$parent.openOrders.push(result.order);
-                    if (orderType == 'Limit') {
+                    if (result.order.orderType == 'Limit') {
                         //$scope.pendingOrders.push(result.order);
                         //$scope.$parent.pendingOrders.push(result.order);
                         // We need to get back the pending order from the DB with it's _id value
@@ -528,6 +529,10 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
             $state.go('chart', {
                 symbolID: ticker
             });
+        };
+
+        $scope.toggleOrderType = function(orderType) {
+            $scope.orderType = orderType;
         };
 
         //This function will execute once the controller is initialised. 

@@ -78,27 +78,6 @@ io.on('connection', function(socket) {
 	});
 });
 
-//I'm trying to figure out why I get this error regularly
-/*
-events.js:72
-        throw er; // Unhandled 'error' event
-              ^
-Error: connect ECONNREFUSED
-    at errnoException (net.js:905:11)
-    at Object.afterConnect [as oncomplete] (net.js:896:19)
-*/
-io.sockets.on('connection', function(conn) {
-conn.on('error', function() {
-console.log('error in io.sockets.on!');
-});
-});
-
-
-io.on('error', function(msg) {
-	console.log("Socket.io listener error. Message: " + msg);
-});
-
-
 function trackTicker(socket, ticker) {
 	if (!ticker)
 		return;
@@ -145,7 +124,7 @@ function trackTicker(socket, ticker) {
 }
 
 function sendEquityQuoteToClients(socket, ticker) {
-	http.get({
+	var req = http.get({
 		host: 'www.google.com',
 		port: 80,
 		path: '/finance/info?client=ig&q=' + ticker
@@ -158,7 +137,7 @@ function sendEquityQuoteToClients(socket, ticker) {
 		});
 
 		response.on('error', function(error) {
-			console.log("error on http get = " + error);
+			console.log("Response error on http get sendEquityQuoteToClients = " + error);
 		});
 
 		response.on('end', function() {
@@ -183,12 +162,15 @@ function sendEquityQuoteToClients(socket, ticker) {
 			}
 		});
 	});
+	req.on('error', function(e) {
+					console.log("HTTP get request error sendEquityQuoteToClients: " + e);
+	});
 }
 
 function sendFXQuoteToClients(socket, ticker) {
 	var url = 'http://query.yahooapis.com/v1/public/yql?q=select * from yahoo.finance.xchange where pair in ("' + ticker + '")&format=json&env=store://datatables.org/alltableswithkeys';
 
-	http.get(url, function(response) {
+	var req = http.get(url, function(response) {
 		response.setEncoding('utf8');
 		var data = "";
 
@@ -197,7 +179,7 @@ function sendFXQuoteToClients(socket, ticker) {
 		});
 
 		response.on('error', function(error) {
-			console.log("error on http get = " + error);
+			console.log("Response error on http get sendFXQuoteToClients = " + error);
 		});
 
 		response.on('end', function() {
@@ -226,12 +208,15 @@ function sendFXQuoteToClients(socket, ticker) {
 			}
 		});
 	});
+	req.on('error', function(e) {
+					console.log("HTTP get request error sendFXQuoteToClients: " + e);
+	});
 }
 
 function sendFXNewsToClients(socket) {
 	var url = 'http://articlefeeds.nasdaq.com/nasdaq/categories?category=Forex%20and%20Currencies&format=xml';
 
-	http.get(url, function(response) {
+	var req = http.get(url, function(response) {
 		response.setEncoding('utf8');
 		var data = "";
 
@@ -240,7 +225,7 @@ function sendFXNewsToClients(socket) {
 		});
 
 		response.on('error', function(error) {
-			console.log("error on http get = " + error);
+			console.log("Response error on http get sendFXNewsToClients = " + error);
 		});
 
 		response.on('end', function() {
@@ -273,6 +258,9 @@ function sendFXNewsToClients(socket) {
 				socket.emit('news', news_object);
 			}
 		});
+	});
+	req.on('error', function(e) {
+					console.log("HTTP get request error sendFXNewsToClients: " + e);
 	});
 }
 

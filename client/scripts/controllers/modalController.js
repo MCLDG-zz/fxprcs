@@ -20,11 +20,12 @@ app.controller('ModalCtrl', [
       var orderData = this.data;
       var fullOrder = angular.extend({}, {
         'ticker': tickerID,
-        'price': tickerPrice
+        'price': tickerPrice,
+        'orderType': this.orderType
       }, orderData);
 
       /* post to server*/
-      if (orderData.mode == "Market") {
+      if (this.orderType == "Market") {
         $http.post('/orders/addorder', fullOrder);
       }
       else {
