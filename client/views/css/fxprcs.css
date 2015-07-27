@@ -18,6 +18,12 @@
   float: none !important;
 }
 
+.pad-table tr td {
+    padding: 3px;  
+}
+
+
+
 .InputAddOn {
   display: flex;
 }

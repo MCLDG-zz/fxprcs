@@ -121,6 +121,7 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
                         "price": newQuote.price,
                         "fulfilDate": new Date(),
                         "limitPrice": $scope.pendingOrders[i].limitPrice,
+                        "units": $scope.pendingOrders[i].currencyAmountToBuy,
                         "message": "Pending order fulfilled"
                     });
                     $http.post('/users/addnotification', {
@@ -128,6 +129,7 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
                         "price": newQuote.price,
                         "fulfilDate": new Date(),
                         "limitPrice": $scope.pendingOrders[i].limitPrice,
+                        "units": $scope.pendingOrders[i].currencyAmountToBuy,
                         "message": "Pending order fulfilled"
                     });
 
@@ -136,7 +138,9 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
                 }
             }
         };
-
+        /*
+        * Show the order modal to enable user to capture an order
+        */
         $scope.showOrderModal = function(ticker) {
 
             var getQuoteID = null;
@@ -146,8 +150,6 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
                     break;
                 }
             }
-            //$scope.quoteID = quoteID;
-
             ModalService.showModal({
                 templateUrl: "views/orderModal.html",
                 controller: "ModalCtrl",
@@ -340,7 +342,7 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
         };
 
         /*
-         * remove item from watchlist
+         * add item to watchlist
          */
         $scope.addToWatchlist = function(ticker) {
             //If symbol is invalid, do not add to watchlist
@@ -423,12 +425,25 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
         };
 
         $scope.removePendingOrder = function(orderID) {
-                        var arrayLength = $scope.pendingOrders.length;
+            var arrayLength = $scope.pendingOrders.length;
             var idFound = false;
             for (var i = 0; i < arrayLength; i++) {
                 if ($scope.pendingOrders[i]._id == orderID) {
                     $http.post('/orders/delpendingorder', $scope.pendingOrders[i]);
                     $scope.pendingOrders.splice(i, 1);
+                    idFound = true;
+                    break;
+                }
+            }
+        };
+
+        $scope.removeNotification = function(notificationID) {
+            var arrayLength = $scope.notifications.length;
+            var idFound = false;
+            for (var i = 0; i < arrayLength; i++) {
+                if ($scope.notifications[i]._id == notificationID) {
+                    $http.post('/users/delnotification', $scope.notifications[i]);
+                    $scope.notifications.splice(i, 1);
                     idFound = true;
                     break;
                 }

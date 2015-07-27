@@ -78,5 +78,19 @@ router.post('/addnotification', function(req, res) {
     });
 });
 
+
+/*
+ * Delete notification.
+ */
+router.post('/delnotification', function(req, res) {
+    var db = req.db;
+    var collection = db.get('usernotifications');
+    collection.remove({_id: req.body._id}, function(err, result){
+        res.send(
+            (err === null) ? { msg: '' } : { msg: err }
+        );
+    });
+});
+
 module.exports = router;
 module.exports = router;

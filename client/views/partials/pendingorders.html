@@ -15,9 +15,9 @@
                 <img ng-src="{{getFlagForFirstCurrency(item.ticker)}}">
                 <img ng-src="{{getFlagForSecondCurrency(item.ticker)}}">
             </td>
-            <td backgroundhighlighter="item.price" class="span2">{{item.price}}</td>
-            <td texthighlighter="item.limitPrice" class="span2">{{item.limitPrice}}</td>
-            <td texthighlighter="item.units" class="span2">{{item.currencyAmountToBuy}}</td>
+            <td class="span2">{{item.price}}</td>
+            <td class="span2">{{item.limitPrice}}</td>
+            <td class="span2">{{item.currencyAmountToBuy}}</td>
             <td class="span1" rowspan="2" style="vertical-align:middle;">
                 <a href class="btn btn-danger btn-xs" ng-click="removePendingOrder(item._id)">Remove</a>
             </td>

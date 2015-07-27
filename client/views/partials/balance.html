@@ -43,7 +43,9 @@
       <tbody ng-repeat="item in balance track by $index" class="list">
         <tr>
           <tr>
-            <td colspan="2" class="text-muted text-center">All figures in HKD</td>
+            <td colspan="2" class="text-muted text-center">All figures in HKD
+                <img ng-src="{{getFlagForFirstCurrency('HKD')}}">
+            </td>
           </tr>
           <tr>
             <td>Buying Power</td>
