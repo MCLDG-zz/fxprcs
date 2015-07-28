@@ -17,7 +17,9 @@
     "socket.io": "",
     "mongodb": "",
     "monk": "",
-    "xml2js": ""
+    "xml2js": "",
+    "node-soap": "",
+    "soap": ""
   },
   "devDependencies": {
     "jasmine-core": "^2.3.4",

@@ -92,5 +92,44 @@ router.post('/delnotification', function(req, res) {
     });
 });
 
-module.exports = router;
+/*
+ * Get weather data
+ */
+router.get('/getweather', function(req, res) {
+	var soap = require('soap');
+	var url = 'http://wsf.cdyne.com/WeatherWS/Weather.asmx?wsdl';
+	var args = {ZIP: req.query.ZIP};
+	
+	soap.createClient(url, function(err, client) {
+		client.GetCityWeatherByZIP(args, function(err, result) {
+			console.log("GetCityWeather args are: " + args);
+			console.log("GetCityWeather err is: " + err);
+			console.log(result);
+			var response = {city: result.GetCityWeatherByZIPResult.City, state: result.GetCityWeatherByZIPResult.State, temp: result.GetCityWeatherByZIPResult.Temperature};
+			res.send(result);
+			res.end();
+		});
+	});
+});
+
+/*
+ * Post weather data
+ */
+router.post('/postweather', function(req, res) {
+	var soap = require('soap');
+	var url = 'http://wsf.cdyne.com/WeatherWS/Weather.asmx?wsdl';
+	var args = {ZIP: req.query.ZIP};
+	console.log("GetCityWeather args are: " + args);
+	
+	soap.createClient(url, function(err, client) {
+		client.GetCityWeatherByZIP(args, function(err, result) {
+			console.log("GetCityWeather err is: " + err);
+			console.log(result);
+			//var response = {city: result.GetCityWeatherByZIPResult.City, state: result.GetCityWeatherByZIPResult.State, temp: result.GetCityWeatherByZIPResult.Temperature};
+			res.send(result);
+			res.end();
+		});
+	});
+});
+
 module.exports = router;
