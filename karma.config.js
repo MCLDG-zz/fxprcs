@@ -15,9 +15,13 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'www/libs/angular/angular.js',
-      'www/libs/angular/angular-mocks.js',
-      //'*.js',
+      'client/libs/angular/angular.js',
+      'client/libs/angular/angular-mocks.js',
+      'https://cdn.socket.io/socket.io-1.3.5.js',
+      'client/libs/ui-grid/js/ui-grid.js',
+      'client/libs/ui-router/angular-ui-router.js',
+      'client/scripts/controllers/tickerController.js',
+      'client/scripts/**/*.js',
       'tests/*.js'
     ],
 

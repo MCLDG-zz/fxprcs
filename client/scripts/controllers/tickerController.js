@@ -5,8 +5,6 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
 
         var socket = io.connect();
 
-        $scope.quote = {};
-        $scope.quotedata = {};
         $scope.quotes = [];
         $scope.pendingOrders = [];
         $scope.newticker = '';
@@ -15,7 +13,7 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
         $scope.balance = {};
         $scope.orders = [];
         $scope.orderModalResult = null;
-        $scope.addWatchlistResult = null;
+        $scope.addWatchlistResult = false;
         $scope.quotewidgetcoll = {
             quotewidgetobject: []
         };
@@ -30,27 +28,10 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
         $scope.countryToCurrencyMap = {};
         $scope.orderType = "Market";
         
+        /*
+        * Handle the quote being sent from node.js server via socket.io
+        */
         socket.on('quote', function(data) {
-            //Before accepting a quote we must confirm that the ticker is on the watchlist. If
-            //the user is not interested in watching this ticker, we will ignore the quote
-            //first, ensure the watchlist exists
-            /*
-            if (!$scope.tickerList.watchlist) {
-                return;
-            }
-            var arrayLength = $scope.tickerList.watchlist.length;
-            var tickerFound = false;
-            for (var i = 0; i < arrayLength; i++) {
-                if ($scope.tickerList.watchlist[i] == data.ticker) {
-                    tickerFound = true;
-                    break;
-                }
-            }
-            if (!tickerFound) {
-                return;
-            }
-            */
-            $scope.quote = data;
             $scope.price = data.price;
             $scope.ticker = data.ticker;
 
@@ -75,15 +56,19 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
                 $scope.quotes.push(data);
             }
             $scope.$apply();
-            $scope.quote = {};
-
             $scope.triggerPendingOrders(data);
         });
 
+        /*
+        * Handle the news being sent from node.js server via socket.io
+        */
         socket.on('news', function(data) {
             $scope.news = data;
         });
 
+        /*
+        * Send a request for a quote to the node.js server via socket.io
+        */
         $scope.send = function send() {
             socket.emit('ticker', $scope.newticker);
             //push onto the quotes array to ensure it displays on page, even if no valid quote exists for this ticker
@@ -233,7 +218,6 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
                 if (data.length < 1) {
                     return;
                 }
-
                 $scope.balance = data;
                 $scope.balance[0].accountvalue = Number(data[0].cashbalance) + Number(data[0].assetvalue);
             }).
@@ -324,8 +308,8 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
                     break;
                 }
             }
-            var httpReq = $http.post('/users/updatewatchlist', $scope.tickerList).
-            success(function(data, status, headers, config) {
+            var httpReq = $http.post('/users/updatewatchlist', $scope.tickerList)
+            .success(function(data, status, headers, config) {
                 //if successful, remove from the quotes array - this will impact the 
                 //display on the Watchlist page, which is bound to the quotes array
                 for (var i = 0; i < $scope.quotes.length; i++) {
@@ -334,11 +318,13 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
                         break;
                     }
                 }
-
-            }).
-            error(function(data, status, headers, config) {});
-
-            //
+            })
+            .error(function(data, status, headers, config) {                
+                //if error, do not remove from the quotes array as we still want to display quotes
+                //for this symbol
+                console.log("TickerCtrl - removeFromWatchlist - Error removing item from watchlist."
+                    + "Ticker: " + ticker + ", status: " + status); 
+            });
         };
 
         /*
@@ -347,21 +333,21 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
         $scope.addToWatchlist = function(ticker) {
             //If symbol is invalid, do not add to watchlist
             if (!$scope.isValidSymbol(ticker)) {
-                $scope.addWatchlistResult = $sce.trustAsHtml("<strong> " + ticker + "</strong> is invalid - cannot add to watchlist");
+                $scope.addWatchlistResult = $sce.trustAsHtml("<strong>" + ticker + "</strong> is invalid - cannot add to watchlist");
                 $timeout(function() {
                     $scope.addWatchlistResult = false;
                 }, 5000);
-                return;
+                return false;
             }
 
             //If ticker is already in watchlist, no action required
             for (var i = 0; i < $scope.tickerList.watchlist.length; i++) {
                 if (ticker == $scope.tickerList.watchlist[i]) {
-                    $scope.addWatchlistResult = $sce.trustAsHtml("<strong> " + ticker + "</strong> is already in your watchlist");
+                    $scope.addWatchlistResult = $sce.trustAsHtml("<strong>" + ticker + "</strong> is already in your watchlist");
                     $timeout(function() {
                         $scope.addWatchlistResult = false;
                     }, 5000);
-                    return;
+                    return false;
                 }
             }
 
@@ -373,14 +359,12 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
                 // - this will impact the display on the Watchlist page, which is bound to the quotes array
                 //$scope.newticker = ticker;
                 //$scope.send();
-                $scope.addWatchlistResult = $sce.trustAsHtml("<strong> " + ticker + "</strong> successfully added to watchlist");
+                $scope.addWatchlistResult = $sce.trustAsHtml("<strong>" + ticker + "</strong> successfully added to watchlist");
                 $timeout(function() {
                     $scope.addWatchlistResult = false;
                 }, 5000);
             }).
             error(function(data, status, headers, config) {});
-
-            //
         };
 
         $scope.loadCountryToCurrency = function() {
@@ -391,7 +375,6 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
                     return;
                 }
                 $scope.countryToCurrencyMap = data[0];
-
             }).
             error(function(data, status, headers, config) {
                 $scope.countryToCurrencyMap = {
@@ -449,53 +432,7 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
                 }
             }
         };
-
-        /*
-        Grid options for orders
-        */
-        $scope.gridOptionsOpenOrder = {
-            data: 'orders',
-            columnDefs: [{
-                field: 'ticker',
-                displayName: 'Symbol'
-            }, {
-                field: 'price',
-                displayName: 'Price'
-            }, {
-                field: 'limitPrice',
-                displayName: 'Limit Price'
-            }, {
-                field: 'mode',
-                displayName: 'Order Type'
-            }, {
-                field: 'currencyAmountToBuy',
-                displayName: 'Units to Buy'
-            }]
-        };
-
-        /*
-        Grid options for notifications
-        */
-        $scope.gridOptionsNotifications = {
-            data: 'notifications',
-            columnDefs: [{
-                field: 'ticker',
-                displayName: 'Symbol'
-            }, {
-                field: 'price',
-                displayName: 'Price'
-            }, {
-                field: 'fulfilDate',
-                displayName: 'Fulfill Date'
-            }, {
-                field: 'limitPrice',
-                displayName: 'Limit Price'
-            }, {
-                field: 'message',
-                displayName: 'Message'
-            }]
-        };
-
+        
         $scope.handleSearchSymbolSubmit = function() {
             var symbolToSearch = this.data.symbolToSearch.toUpperCase();
 
@@ -536,11 +473,7 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
         };
 
         $scope.showChart = function(ticker) {
-
-            //Add the symbol to 'quotes' so that prices are fetched from the server
-            //Do not add to watchlist (tickerList)
             $scope.symbolID = ticker;
-
             $state.go('chart', {
                 symbolID: ticker
             });
@@ -579,7 +512,7 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
     }
 ]);
 
-// Configure the navigation and routing
+// Configure the navigation and routing - this uses ui-router
 app.config(function($stateProvider, $urlRouterProvider) {
 
     $urlRouterProvider.otherwise('/home');
@@ -587,7 +520,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
     $stateProvider
 
     // HOME STATES AND NESTED VIEWS ========================================
-        .state('home', {
+    .state('home', {
         url: '/home',
         templateUrl: 'views/partials/watchlist.html'
     })
@@ -633,80 +566,5 @@ app.config(function($stateProvider, $urlRouterProvider) {
         controller: function($scope, $stateParams) {
             $scope.symbolID = $stateParams.symbolID;
         }
-    })
-
-    // ABOUT PAGE AND MULTIPLE NAMED VIEWS =================================
-    .state('about', {
-        // we'll get to this in a bit       
     });
-
-});
-
-/*
-This will highlight an element passed to the directive when the value
-of the bound value changes, for example:
-
-        <tr data-ng-repeat="item in quotes track by $index" class="list">
-          <td highlighter="item.price" class="span2">{{item.price}}</td>
-        </tr>
-
-In this case, whenever item.price changes the element will be highlighted
-
-The 'track by $index' is required, otherwise the directive does not work. If 
-you have a filter it must be applied before the 'track by $index', as follows,
-otherwise the filter will not be applied:
-
-      <tbody ng-repeat="item in quotes | filter:{ ticker: symbolID } track by $index" class="list">
-
-*/
-app.directive('backgroundhighlighter', function($timeout) {
-    return {
-        restrict: 'A',
-        link: function(scope, element, attrs) {
-            scope.$watch(attrs.backgroundhighlighter, function(nv, ov) {
-                if (nv !== ov) {
-                    var newclass = nv < ov ? 'highlight-red' : 'highlight-green';
-
-                    // apply class
-                    element.addClass(newclass);
-
-                    // auto remove after some delay
-                    $timeout(function() {
-                        element.removeClass(newclass);
-                    }, 1000);
-                }
-            });
-        }
-    };
-});
-
-app.directive('texthighlighter', function($timeout) {
-    return {
-        restrict: 'A',
-        link: function(scope, element, attrs) {
-            scope.$watch(attrs.texthighlighter, function(nv, ov) {
-                if (nv !== ov) {
-                    var newclass = nv < ov ? 'highlight-text-red' : 'highlight-text-green';
-
-                    // apply class
-                    element.addClass(newclass);
-
-                    // auto remove after some delay
-                    $timeout(function() {
-                        element.removeClass(newclass);
-                    }, 1000);
-                }
-            });
-        }
-    };
-});
-
-app.filter('inWatchlistArray', function($filter) {
-    return function(list, arrayFilter, element) {
-        if (arrayFilter) {
-            return $filter("filter")(list, function(listItem) {
-                return arrayFilter.indexOf(listItem[element]) != -1;
-            });
-        }
-    };
 });

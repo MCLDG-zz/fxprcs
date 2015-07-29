@@ -10,12 +10,12 @@ app.controller('ModalCtrl', [
     $scope.data = {};
 
     /*
-    Handle the form submit from orderModal.html
+        Handle the form submit from orderModal.html
     
-    While compiling the Form angular created the 'order' object
-    which converts the form data to JSON automatically, so return this to the 
-    caller
-    */
+        While compiling the Form angular created the 'order' object
+        which converts the form data to JSON automatically, so return this to the 
+        caller
+        */
     $scope.handleOpenOrderFormSubmit = function() {
       var orderData = this.data;
       var fullOrder = angular.extend({}, {
@@ -27,6 +27,7 @@ app.controller('ModalCtrl', [
       /* post to server*/
       if (this.orderType == "Market") {
         $http.post('/orders/addorder', fullOrder);
+        $scope.addToQuantum(fullOrder);
       }
       else {
         $http.post('/orders/addpendingorder', fullOrder);
@@ -39,12 +40,12 @@ app.controller('ModalCtrl', [
         order: fullOrder
       }, 500); // close, but give 500ms for bootstrap to animate
     };
-    
+
     //Calculated field to hold the total order price
-    $scope.totalOrderPrice = function() { 
+    $scope.totalOrderPrice = function() {
       if ($scope.data.currencyAmountToBuy && $scope.tickerPrice) {
-        return $scope.data.currencyAmountToBuy * $scope.tickerPrice; 
-      } 
+        return $scope.data.currencyAmountToBuy * $scope.tickerPrice;
+      }
       else {
         return 0;
       }
@@ -68,5 +69,52 @@ app.controller('ModalCtrl', [
       $element.modal('hide');
     };
 
+    /*
+     * Adds the new order to Quantum
+     */
+    $scope.addToQuantum = function(orderData) {
+
+      //Firstly, get the next available Quantum ID
+      var dealSetNoResult = 0;
+      var httpReq = $http.get('/users/getQTDealset')
+        .success(function(data, status, headers, config) {
+          //ensure we received a response
+          if (data.length < 1) {
+            return;
+          }
+          dealSetNoResult = data.GetDealSetNoResult;
+
+          //Then construct the JSON message and post the order
+          var today = new Date();
+          var todayStr = today.toISOString();
+          var valueDate = new Date();
+          var valueStr = new Date(valueDate.setDate(valueDate.getDate() + 2)).toISOString();
+
+          var args = {
+            "DM2FXDealID": "300000001",
+            "DealInstrument": "FX Spot",
+            "DM2CptyID": "80000003",
+            "BUnitName": "Sydney Cash Unit",
+            "MaturityDate": valueStr,
+            "DealDate": todayStr,
+            "ValueDate": valueStr,
+            "Created": todayStr,
+            "ExternalDealSetID": dealSetNoResult,
+            "BuyCurr": orderData.ticker.substr(0, 3),
+            "SellCurr": orderData.ticker.substr(3, 3),
+            "BuyAmount": orderData.currencyAmountToBuy,
+            "SellAmount": 1,
+            "ContractRate": 1.9,
+            "SpotRate": orderData.price,
+            "ForwardPoints": 0,
+            "DealerName": "Jakco Huang"
+          };
+
+          $http.post('/users/postQTFXDeal', args)
+            .success(function(data, status, headers, config) {})
+            .error(function(data, status, headers, config) {});
+        })
+        .error(function(data, status, headers, config) {});
+    };
   }
 ]);

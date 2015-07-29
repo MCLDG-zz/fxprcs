@@ -163,7 +163,7 @@ function sendEquityQuoteToClients(socket, ticker) {
 		});
 	});
 	req.on('error', function(e) {
-					console.log("HTTP get request error sendEquityQuoteToClients: " + e);
+		console.log("HTTP get request error sendEquityQuoteToClients: " + e);
 	});
 }
 
@@ -209,7 +209,7 @@ function sendFXQuoteToClients(socket, ticker) {
 		});
 	});
 	req.on('error', function(e) {
-					console.log("HTTP get request error sendFXQuoteToClients: " + e);
+		console.log("HTTP get request error sendFXQuoteToClients: " + e);
 	});
 }
 
@@ -260,7 +260,7 @@ function sendFXNewsToClients(socket) {
 		});
 	});
 	req.on('error', function(e) {
-					console.log("HTTP get request error sendFXNewsToClients: " + e);
+		console.log("HTTP get request error sendFXNewsToClients: " + e);
 	});
 }
 

@@ -19,7 +19,8 @@
     "monk": "",
     "xml2js": "",
     "node-soap": "",
-    "soap": ""
+    "soap": "",
+    "angular": "1.4.3"
   },
   "devDependencies": {
     "jasmine-core": "^2.3.4",
