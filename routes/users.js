@@ -214,6 +214,13 @@ router.post('/postQTFXDeal', function(req, res) {
     var soap = require('soap');
     var url = 'http://223.197.29.89/TestWebService1/Service1.asmx?wsdl';
 
+    //Post the quantum record to our FX DB also
+    var db = req.db;
+    var collection = db.get('quantumorders');
+    collection.insert(req.body, function(err, result) {
+    });
+
+    //Then post to Quantum
     soap.createClient(url, function(err, client) {
         client.CreateFXDeal(req.body, function(err, result) {
             res.send(result);

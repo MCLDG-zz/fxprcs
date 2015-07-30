@@ -1,0 +1,118 @@
+<div ng-init="loadQuantumOrders()" class="row">
+  <div class="col-xs-12 col-md-12">
+    <!--    <div class="row center-block col-xs-12 col-sm-12 col-md-12 col-lg-12"> -->
+
+    <!-- Show the FX order -->
+    <table class="table table-striped table-bordered table table-condensed table-responsive">
+      <thead>
+        <tr>
+          <th colspan="3">
+            Order detail for order: {{orderID}} 
+          </th>
+        </tr>
+      </thead>
+      <tbody ng-repeat="item in orders | filter:{ _id: orderID }:true track by $index" class="list">
+        <tr>
+          <tr>
+            <td colspan="2" class="text-muted text-center">All figures in HKD
+                <img ng-src="{{getFlagForFirstCurrency('HKD')}}">
+            </td>
+          </tr>
+          <tr>
+            <td>Symbol</td>
+            <td class="span2">{{item.ticker}}
+              <img ng-src="{{getFlagForFirstCurrency(item.ticker)}}">
+              <img ng-src="{{getFlagForSecondCurrency(item.ticker)}}">
+            </td>
+          </tr>
+          <tr>
+            <td>Order ID</td>
+            <td class="span2">{{item._id}}</td>
+          </tr>
+          <tr>
+            <td>Order Type</td>
+            <td class="span2">{{item.orderType}}</td>
+          </tr>
+          <tr>
+            <td>Price</td>
+            <td class="span2">{{item.price}}</td>
+          </tr>
+          <tr>
+            <td>Units</td>
+            <td class="span2">{{item.currencyAmountToBuy}}</td>
+          </tr>
+          <tr>
+            <td>Total</td>
+            <td class="span2">{{item.price * item.currencyAmountToBuy | currency}}</td>
+          </tr>
+        </tr>
+      </tbody>
+    </table>
+    
+    <!-- Show the matching Quantum order -->
+    <table class="table table-striped table-bordered table table-condensed table-responsive">
+      <thead>
+        <tr>
+          <th colspan="3">
+             Matching Quantum Order 
+          </th>
+        </tr>
+      </thead>
+      <tbody ng-repeat="item in quantumOrders | filter:{ DM2FXDealID: orderID }:true track by $index" class="list">
+        <tr>
+          <tr>
+            <td>Symbol</td>
+            <td class="span2">{{item.BuyCurr + item.SellCurr}}
+              <img ng-src="{{getFlagForFirstCurrency(item.BuyCurr + item.SellCurr)}}">
+              <img ng-src="{{getFlagForSecondCurrency(item.BuyCurr + item.SellCurr)}}">
+            </td>
+          </tr>
+          <tr>
+            <td>Quantum ID</td>
+            <td class="span2">{{item.ExternalDealSetID}}</td>
+          </tr>
+          <tr>
+            <td>Instrument</td>
+            <td class="span2">{{item.DealInstrument}}</td>
+          </tr>
+          <tr>
+            <td>Spot Rate</td>
+            <td class="span2">{{item.SpotRate}}</td>
+          </tr>
+          <tr>
+            <td>Units</td>
+            <td class="span2">{{item.BuyAmount}}</td>
+          </tr>
+          <tr>
+            <td>Date Created</td>
+            <td class="span2">{{item.Created}}</td>
+          </tr>
+          <tr>
+            <td>Deal Date</td>
+            <td class="span2">{{item.DealDate}}</td>
+          </tr>
+          <tr>
+            <td>Maturity Date</td>
+            <td class="span2">{{item.MaturityDate}}</td>
+          </tr>
+          <tr>
+            <td>Value Date</td>
+            <td class="span2">{{item.ValueDate}}</td>
+          </tr>
+          <tr>
+            <td>Business Unit</td>
+            <td class="span2">{{item.BUnitName}}</td>
+          </tr>
+          <tr>
+            <td>Dealer</td>
+            <td class="span2">{{item.DealerName}}</td>
+          </tr>
+          <tr>
+            <td>Total</td>
+            <td class="span2">{{item.BuyAmount * item.SpotRate | currency}}</td>
+          </tr>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

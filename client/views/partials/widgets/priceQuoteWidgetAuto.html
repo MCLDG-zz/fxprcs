@@ -25,8 +25,12 @@
           <td texthighlighter="item.bid" class="span2">{{item.bid}}</td>
           <td texthighlighter="item.ask" class="span2">{{item.ask}}</td>
           <td class="span1" rowspan="2" style="vertical-align:middle;">
-            <a href class="btn btn-success btn-xs" ng-click="showOrderModal(item.ticker)">Order</a>
-            <a href class="btn btn-danger btn-xs" ng-click="removeFromWatchlist(item.ticker)">Remove</a>
+            <a href class="btn btn-success btn-sm" ng-click="showOrderModal(item.ticker)" title="Place an Order">
+              <span class="fa fa-tasks" aria-hidden="true"></span>
+            </a>
+            <a href class="btn btn-danger btn-sm" ng-click="removeFromWatchlist(item.ticker)" title="Remove from Watchlist">
+              <span class="fa fa-remove" aria-hidden="true"></span>
+            </a>
           </td>
           <pre class="alert alert-success fade in" ng-bind-html="orderModalResult" ng-show="orderModalResult"></pre>
         </tr>

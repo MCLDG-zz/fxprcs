@@ -12,6 +12,12 @@
     color: green;
 }
 
+.highlightSelectedRow {
+    background-color:#ff0;
+    color:white;
+    font-weight:bold;
+}
+
 .center-table
 {
   margin: 0 auto !important;

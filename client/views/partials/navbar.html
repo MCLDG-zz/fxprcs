@@ -8,7 +8,10 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#watchlist" ui-sref="watchlist">Watchlist</a>
+
+            <a href="#watchlist" class="navbar-brand" ui-sref="watchlist">
+                <span class="fa fa-home" aria-hidden="true"></span> Watchlist
+            </a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -16,16 +19,29 @@
 
             <ul class="nav navbar-nav navbar-right">
                 <li>
-                    <a href="#balance" class="hidden-xs" ui-sref="balance">Balance</a>
-                    <a href="#balance" class="visible-xs" data-toggle="collapse" data-target=".navbar-collapse">Balance</a>
+                    <a href="#balance" class="hidden-xs" ui-sref="balance">
+                        <span class="fa fa-balance-scale" aria-hidden="true"></span> Balance
+                    </a>
+                    <a href="#balance" class="visible-xs" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="fa fa-balance-scale" aria-hidden="true"></span> Balance
+                    </a>
                 </li>
                 <li>
-                    <a href="#openorders" class="hidden-xs" ui-sref="openorders">Open Orders</a>
-                    <a href="#openorders" class="visible-xs" data-toggle="collapse" data-target=".navbar-collapse">Open Orders</a>
+                    <a href="#openorders" class="hidden-xs" ui-sref="openorders">
+                        <span class="fa fa-tasks" aria-hidden="true"></span> Open Orders
+                    </a>
+                    <a href="#openorders" class="visible-xs" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="fa fa-tasks" aria-hidden="true"></span> Open Orders
+                    </a>
                 </li>
                 <li>
-                    <a href="#pendingorders" class="hidden-xs" ui-sref="pendingorders">Pending Orders</a>
-                    <a href="#pendingorders" class="visible-xs" data-toggle="collapse" data-target=".navbar-collapse">Pending Orders</a>
+                    <a href="#pendingorders" class="hidden-xs" ui-sref="pendingorders">
+                        <span class="fa fa-legal" aria-hidden="true"></span> Pending Orders
+                    </a>
+                    <a href="#pendingorders" class="visible-xs" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="fa fa-legal" aria-hidden="true"></span> Pending Orders
+                    </a>
+
                 </li>
                 <li>
                     <a href="#notifications" class="hidden-xs" ui-sref="notifications">
@@ -37,12 +53,10 @@
                 </li>
                 <li>
                     <a href="#news" class="hidden-xs" ui-sref="news">
-                        <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
-                        News
+                        <span class="fa fa-newspaper-o" aria-hidden="true"></span> News
                     </a>
                     <a href="#news" class="visible-xs" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
-                        News
+                        <span class="fa fa-newspaper-o" aria-hidden="true"></span> News
                     </a>
                 </li>
             </ul>
@@ -52,8 +66,8 @@
                 <div class="InputAddOn">
                     <button type="submit" class="btn InputAddOn-item">
                         <span class="glyphicon glyphicon-search"></span>
-                    </button> 
-                    <input type="text" ng-model="data.symbolToSearch" class="InputAddOn-field form-control" maxlength="10" placeholder="Search Symbol">                    
+                    </button>
+                    <input type="text" ng-model="data.symbolToSearch" class="InputAddOn-field form-control" maxlength="10" placeholder="Search Symbol">
                 </div>
             </form>
         </div>

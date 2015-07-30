@@ -2,7 +2,7 @@
 <!--      <div ui-grid="gridOptionsOpenOrder" class="grid" ui-grid-selection ui-grid-resize-columns></div> -->
 </div>
 
-<table class="table table-condensed table-responsive">
+<table class="table table-condensed table-responsive table-hover">
     <thead>
         <tr>
             <th colspan="1">Symbol</th>
@@ -13,7 +13,8 @@
             <th colspan="1"></th>
         </tr>
     </thead>
-    <tbody data-ng-repeat='item in orders' class="list">
+    <!-- This can be added to the tbody repeat below to create a highlight-on-click: ng-class="{'highlightSelectedRow':$index == selectedOrderRow}" -->
+    <tbody data-ng-repeat='item in orders' class="list" ng-click="showOrderDetail();">
         <tr>
             <td>
                 <a href="#/showsymbol/{{item.ticker}}" ui-sref="showsymbol({symbolID: item.ticker})" class="span2" ng-bind="item.ticker"></a>

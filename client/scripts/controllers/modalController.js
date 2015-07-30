@@ -1,7 +1,7 @@
 var app = angular.module('pricing');
 
 app.controller('ModalCtrl', [
-  '$scope', '$element', '$http', 'title', 'close', 'tickerID', 'tickerPrice',
+  '$scope', '$element', '$http', 'title', 'close', 'tickerID', 'tickerPrice', 
   function($scope, $element, $http, title, close, tickerID, tickerPrice) {
 
     $scope.title = title;
@@ -15,7 +15,7 @@ app.controller('ModalCtrl', [
         While compiling the Form angular created the 'order' object
         which converts the form data to JSON automatically, so return this to the 
         caller
-        */
+    */
     $scope.handleOpenOrderFormSubmit = function() {
       var orderData = this.data;
       var fullOrder = angular.extend({}, {
@@ -26,8 +26,10 @@ app.controller('ModalCtrl', [
 
       /* post to server*/
       if (this.orderType == "Market") {
+        //Firstly, publish order to Quantum
+        //$scope.addToQuantum(fullOrder);
+        //Then save the order to the DB
         $http.post('/orders/addorder', fullOrder);
-        $scope.addToQuantum(fullOrder);
       }
       else {
         $http.post('/orders/addpendingorder', fullOrder);
@@ -111,10 +113,17 @@ app.controller('ModalCtrl', [
           };
 
           $http.post('/users/postQTFXDeal', args)
-            .success(function(data, status, headers, config) {})
-            .error(function(data, status, headers, config) {});
+            .success(function(data, status, headers, config) {
+              $scope.quantumID = dealSetNoResult;
+              return dealSetNoResult;
+            })
+            .error(function(data, status, headers, config) {
+              console.log("Unable to connect to Quantum to postQTFXDeal. Status is: " + status);
+            });
         })
-        .error(function(data, status, headers, config) {});
+        .error(function(data, status, headers, config) {
+          console.log("Unable to connect to Quantum to getQTDealset. Status is: " + status);
+        });
     };
   }
 ]);

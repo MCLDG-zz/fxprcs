@@ -27,7 +27,9 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
         $scope.news = {};
         $scope.countryToCurrencyMap = {};
         $scope.orderType = "Market";
-        
+        $scope.quantumOrders = [];
+        $scope.selectedOrderRow = null;
+ 
         /*
         * Handle the quote being sent from node.js server via socket.io
         */
@@ -270,6 +272,18 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
             });
         };
 
+        $scope.loadQuantumOrders = function() {
+            var httpReq = $http.get('/orders/quantumorder').
+            success(function(data, status, headers, config) {
+                $scope.quantumOrders = data;
+            }).
+            error(function(data, status, headers, config) {
+                $scope.quantumOrders = {
+                    "error retrieving pending orders": status
+                };
+            });
+        };
+
         //This function will load the watchlist from Mongodb, then populate
         //quotes, which will be displayed (by priceQuoteDirective) on the main page.
         $scope.loadWatchlist = function() {
@@ -479,10 +493,19 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
             });
         };
 
+        $scope.showOrderDetail = function() {
+            $scope.selectedOrder = this.item;
+            $scope.selectedOrderRow = this.$index;
+
+            $state.go('orderDetail', {
+                orderID: this.item._id
+            });
+        };
+
         $scope.toggleOrderType = function(orderType) {
             $scope.orderType = orderType;
         };
-
+        
         //This function will execute once the controller is initialised. 
         $scope.init = function() {
             $scope.loadWatchlist();
@@ -560,6 +583,14 @@ app.config(function($stateProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/widgets/chartWidget.html'
     })
 
+    .state('orderDetail', {
+        url: '/orderdetail/:orderID',
+        templateUrl: 'views/partials/orderdetail.html',
+        controller: function($scope, $stateParams) {
+            $scope.orderID = $stateParams.orderID;
+        }
+    })
+    
     .state('showsymbol', {
         url: '/showsymbol/:symbolID',
         templateUrl: 'views/partials/showsymbol.html',

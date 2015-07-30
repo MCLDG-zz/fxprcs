@@ -19,7 +19,9 @@
             <td class="span2">{{item.limitPrice}}</td>
             <td class="span2">{{item.currencyAmountToBuy}}</td>
             <td class="span1" rowspan="2" style="vertical-align:middle;">
-                <a href class="btn btn-danger btn-xs" ng-click="removePendingOrder(item._id)">Remove</a>
+                <a href class="btn btn-danger btn-xs" ng-click="removePendingOrder(item._id)" title="Cancel Pending Order">
+                  <span class="fa fa-remove" aria-hidden="true"></span>
+                </a>
             </td>
             <pre class="alert alert-success fade in" ng-bind-html="orderModalResult" ng-show="orderModalResult"></pre>
         </tr>
