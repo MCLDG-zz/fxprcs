@@ -17,8 +17,8 @@ angular.module('pricing')
                     '<script type="text/javascript">' +
                     //        '// <![CDATA[' +
                     'new TradingView.widget({' +
-                    '"width": 700,' +
-                    '"height": 350,' +
+                    '"width": 600,' +
+                    '"height": 300,' +
                     '"symbol": "'  + scope.$parent.symbolID + '",' +
                     '"interval": "D",' +
                     '"toolbar_bg": "#E4E8EB",' +
@@ -26,7 +26,7 @@ angular.module('pricing')
                     '"allow_symbol_change": true,' +
 //                    '"watchlist": ["EURUSD", "GBPUSD", "USDJPY", "USDCHF", "USDCAD", "AUDUSD", "NZDUSD", "GBPJPY", "EURGBP", "EURJPY", "FX:XAUUSD", "FX:XAGUSD"],' +
                     '"watchlist":["'  + stringWatchlist + '"],' +
-                    '"details": true,' +
+                    '"details": false,' +
                     '"hideideas": true' +
                     '});' +
                     //        '// ]]&gt;' +

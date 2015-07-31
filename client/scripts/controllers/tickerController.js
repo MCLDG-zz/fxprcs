@@ -27,12 +27,13 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
         $scope.news = {};
         $scope.countryToCurrencyMap = {};
         $scope.orderType = "Market";
-        $scope.quantumOrders = [];
+        $scope.quantumFXOrders = [];
+        $scope.quantumACOrders = [];
         $scope.selectedOrderRow = null;
- 
+
         /*
-        * Handle the quote being sent from node.js server via socket.io
-        */
+         * Handle the quote being sent from node.js server via socket.io
+         */
         socket.on('quote', function(data) {
             $scope.price = data.price;
             $scope.ticker = data.ticker;
@@ -49,7 +50,11 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
             var tickerFound = false;
             for (var i = 0; i < arrayLength; i++) {
                 if ($scope.quotes[i].ticker == $scope.ticker) {
-                    $scope.quotes[i] = data;
+                    //Add an indicator to calculate the price change. We'll use this 
+                    //to display a price change indicator on the UI
+                    $scope.quotes[i] = angular.extend({}, {
+                        'priceChange': $scope.quotes[i].price - data.price
+                    }, data);
                     tickerFound = true;
                     break;
                 }
@@ -62,15 +67,15 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
         });
 
         /*
-        * Handle the news being sent from node.js server via socket.io
-        */
+         * Handle the news being sent from node.js server via socket.io
+         */
         socket.on('news', function(data) {
             $scope.news = data;
         });
 
         /*
-        * Send a request for a quote to the node.js server via socket.io
-        */
+         * Send a request for a quote to the node.js server via socket.io
+         */
         $scope.send = function send() {
             socket.emit('ticker', $scope.newticker);
             //push onto the quotes array to ensure it displays on page, even if no valid quote exists for this ticker
@@ -126,8 +131,8 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
             }
         };
         /*
-        * Show the order modal to enable user to capture an order
-        */
+         * Show the order modal to enable user to capture an order
+         */
         $scope.showOrderModal = function(ticker) {
 
             var getQuoteID = null;
@@ -272,14 +277,26 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
             });
         };
 
-        $scope.loadQuantumOrders = function() {
-            var httpReq = $http.get('/orders/quantumorder').
+        $scope.loadQuantumFXOrders = function() {
+            var httpReq = $http.get('/orders/quantumFXorder').
             success(function(data, status, headers, config) {
-                $scope.quantumOrders = data;
+                $scope.quantumFXOrders = data;
             }).
             error(function(data, status, headers, config) {
-                $scope.quantumOrders = {
-                    "error retrieving pending orders": status
+                $scope.quantumFXOrders = {
+                    "error retrieving Quantum FX orders": status
+                };
+            });
+        };
+
+        $scope.loadQuantumACOrders = function() {
+            var httpReq = $http.get('/orders/quantumACorder').
+            success(function(data, status, headers, config) {
+                $scope.quantumACOrders = data;
+            }).
+            error(function(data, status, headers, config) {
+                $scope.quantumACOrders = {
+                    "error retrieving Quantum AC orders": status
                 };
             });
         };
@@ -323,22 +340,21 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
                 }
             }
             var httpReq = $http.post('/users/updatewatchlist', $scope.tickerList)
-            .success(function(data, status, headers, config) {
-                //if successful, remove from the quotes array - this will impact the 
-                //display on the Watchlist page, which is bound to the quotes array
-                for (var i = 0; i < $scope.quotes.length; i++) {
-                    if (ticker == $scope.quotes[i].ticker) {
-                        $scope.quotes.splice(i, 1);
-                        break;
+                .success(function(data, status, headers, config) {
+                    //if successful, remove from the quotes array - this will impact the 
+                    //display on the Watchlist page, which is bound to the quotes array
+                    for (var i = 0; i < $scope.quotes.length; i++) {
+                        if (ticker == $scope.quotes[i].ticker) {
+                            $scope.quotes.splice(i, 1);
+                            break;
+                        }
                     }
-                }
-            })
-            .error(function(data, status, headers, config) {                
-                //if error, do not remove from the quotes array as we still want to display quotes
-                //for this symbol
-                console.log("TickerCtrl - removeFromWatchlist - Error removing item from watchlist."
-                    + "Ticker: " + ticker + ", status: " + status); 
-            });
+                })
+                .error(function(data, status, headers, config) {
+                    //if error, do not remove from the quotes array as we still want to display quotes
+                    //for this symbol
+                    console.log("TickerCtrl - removeFromWatchlist - Error removing item from watchlist." + "Ticker: " + ticker + ", status: " + status);
+                });
         };
 
         /*
@@ -412,13 +428,17 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
         };
 
         $scope.getFlagForFirstCurrency = function(symbol) {
-            var firstCurrency = symbol.substr(0,3);
-            return "views/images/flags/" + $scope.getCountryForCurrency(firstCurrency) + ".png";
+            var firstCurrency = symbol.substr(0, 3);
+            if (firstCurrency) {
+                return "views/images/flags/" + $scope.getCountryForCurrency(firstCurrency) + ".png";
+            }
         };
 
         $scope.getFlagForSecondCurrency = function(symbol) {
-            var secondCurrency = symbol.substr(3,3);
-            return "views/images/flags/" + $scope.getCountryForCurrency(secondCurrency) + ".png";
+            var secondCurrency = symbol.substr(3, 3);
+            if (secondCurrency) {
+                return "views/images/flags/" + $scope.getCountryForCurrency(secondCurrency) + ".png";
+            }
         };
 
         $scope.removePendingOrder = function(orderID) {
@@ -446,7 +466,7 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
                 }
             }
         };
-        
+
         $scope.handleSearchSymbolSubmit = function() {
             var symbolToSearch = this.data.symbolToSearch.toUpperCase();
 
@@ -505,7 +525,7 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
         $scope.toggleOrderType = function(orderType) {
             $scope.orderType = orderType;
         };
-        
+
         //This function will execute once the controller is initialised. 
         $scope.init = function() {
             $scope.loadWatchlist();
@@ -543,7 +563,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
     $stateProvider
 
     // HOME STATES AND NESTED VIEWS ========================================
-    .state('home', {
+        .state('home', {
         url: '/home',
         templateUrl: 'views/partials/watchlist.html'
     })
@@ -590,7 +610,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
             $scope.orderID = $stateParams.orderID;
         }
     })
-    
+
     .state('showsymbol', {
         url: '/showsymbol/:symbolID',
         templateUrl: 'views/partials/showsymbol.html',

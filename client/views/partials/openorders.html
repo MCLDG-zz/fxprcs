@@ -7,9 +7,9 @@
         <tr>
             <th colspan="1">Symbol</th>
             <th colspan="1">Price</th>
-            <th colspan="1">Limit Price</th>
             <th colspan="1">Units</th>
-            <th colspan="1">Order Type</th>
+            <th colspan="1">Total</th>
+            <th colspan="1">Type</th>
             <th colspan="1"></th>
         </tr>
     </thead>
@@ -22,8 +22,8 @@
                 <img ng-src="{{getFlagForSecondCurrency(item.ticker)}}">
             </td>
             <td class="span2">{{item.price}}</td>
-            <td class="span2">{{item.limitPrice}}</td>
             <td class="span2">{{item.currencyAmountToBuy}}</td>
+            <td class="span2">{{item.price * item.currencyAmountToBuy | currency}}</td>
             <td class="span2">{{item.orderType}}</td>
         </tr>
     </tbody>
