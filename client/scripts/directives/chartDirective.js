@@ -2,12 +2,6 @@ angular.module('pricing')
     .directive('chartdirective', function($compile) {
         return {
             restrict: 'AE',
-            //Injecting the $scope variables hwere did not seem to work.
-            //I had to refer to the symbolID below using $parent
-            scope: {
-                symbolID: '=',
-                newticker: '='
-            },
             link: function(scope, element, attrs) {
                 var watchlist = scope.$parent.tickerList.watchlist;
                 var stringWatchlist = watchlist.toString();

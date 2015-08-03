@@ -17,7 +17,7 @@ var balance = require('./routes/balance');
 var orders = require('./routes/orders');
 var users = require('./routes/users');
 var referencedata = require('./routes/ref');
-//var symbol = require('./routes/symbol');
+var login = require('./routes/login');
 
 var app = express();
 var server = http.createServer(app);
@@ -48,6 +48,7 @@ app.use('/balance', balance);
 app.use('/orders', orders);
 app.use('/users', users);
 app.use('/ref', referencedata);
+app.use('/login', login);
 //app.use('/symbol', symbol);
 
 /// catch 404 and forwarding to error handler

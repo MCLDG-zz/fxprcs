@@ -1,0 +1,24 @@
+<div class="container">
+
+    <form class="form-signin" name="loginForm" ng-controller="LoginCtrl" ng-submit="login(credentials)" novalidate>
+        <h2 class="form-signin-heading">Please sign in</h2>
+        <!-- <label for="inputEmail" class="sr-only">Email address</label> -->
+        <div class="input-group margin-bottom-sm">
+  <span class="input-group-addon"><i class="fa fa-envelope-o fa-fw"></i></span>
+  <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus ng-model="credentials.useremail">
+</div>
+
+        <!-- <label for="inputPassword" class="sr-only">Password</label> -->
+<div class="input-group">
+  <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
+  <input type="password" id="inputPassword" class="form-control" placeholder="Password" required ng-model="credentials.password">
+</div>
+
+        <button class=" btn btn-lg btn-primary btn-block " type="submit ">Sign in</button>
+        <div class="alert alert-danger" ng-show="loginResult ">
+            <div>
+                <p>Login Failed. Invalid username or password entered!</p>
+            </div>
+        </div>
+    </form>
+</div>

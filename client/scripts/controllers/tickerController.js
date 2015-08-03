@@ -18,19 +18,18 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
             quotewidgetobject: []
         };
         $scope.selectedObjectIndex = null;
-        $scope.orderForDebug = null;
-        //Quotes to be displayed upon initialisation
-        //$scope.tickerList = ["USDAUD", "AUDNZD", "USDEUR", "GBPUSD", "USDJPY", "USDCHF", "USDCAD", "USDNZD", "GBPJPY"];
         $scope.tickerList = {};
         $scope.symbolID = null;
         $scope.notifications = [];
         $scope.news = {};
         $scope.countryToCurrencyMap = {};
         $scope.orderType = "Market";
-        $scope.quantumFXOrders = [];
-        $scope.quantumACOrders = [];
         $scope.selectedOrderRow = null;
+        $scope.currentUser = null;
 
+        $scope.setCurrentUser = function(user) {
+            $scope.currentUser = user;
+        };
         /*
          * Handle the quote being sent from node.js server via socket.io
          */
@@ -273,30 +272,6 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
             error(function(data, status, headers, config) {
                 $scope.pendingOrders = {
                     "error retrieving pending orders": status
-                };
-            });
-        };
-
-        $scope.loadQuantumFXOrders = function() {
-            var httpReq = $http.get('/orders/quantumFXorder').
-            success(function(data, status, headers, config) {
-                $scope.quantumFXOrders = data;
-            }).
-            error(function(data, status, headers, config) {
-                $scope.quantumFXOrders = {
-                    "error retrieving Quantum FX orders": status
-                };
-            });
-        };
-
-        $scope.loadQuantumACOrders = function() {
-            var httpReq = $http.get('/orders/quantumACorder').
-            success(function(data, status, headers, config) {
-                $scope.quantumACOrders = data;
-            }).
-            error(function(data, status, headers, config) {
-                $scope.quantumACOrders = {
-                    "error retrieving Quantum AC orders": status
                 };
             });
         };
@@ -554,68 +529,3 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
         };
     }
 ]);
-
-// Configure the navigation and routing - this uses ui-router
-app.config(function($stateProvider, $urlRouterProvider) {
-
-    $urlRouterProvider.otherwise('/home');
-
-    $stateProvider
-
-    // HOME STATES AND NESTED VIEWS ========================================
-        .state('home', {
-        url: '/home',
-        templateUrl: 'views/partials/watchlist.html'
-    })
-
-    .state('openorders', {
-        url: '/openorders',
-        templateUrl: 'views/partials/openorders.html'
-    })
-
-    .state('pendingorders', {
-        url: '/pendingorders',
-        templateUrl: 'views/partials/pendingorders.html'
-    })
-
-    .state('watchlist', {
-        url: '/watchlist',
-        templateUrl: 'views/partials/watchlist.html'
-    })
-
-    .state('balance', {
-        url: '/balance',
-        templateUrl: 'views/partials/balance.html'
-    })
-
-    .state('notifications', {
-        url: '/notifications',
-        templateUrl: 'views/partials/notifications.html'
-    })
-
-    .state('news', {
-        url: '/news',
-        templateUrl: 'views/partials/news.html'
-    })
-
-    .state('chart', {
-        url: '/chart',
-        templateUrl: 'views/partials/widgets/chartWidget.html'
-    })
-
-    .state('orderDetail', {
-        url: '/orderdetail/:orderID',
-        templateUrl: 'views/partials/orderdetail.html',
-        controller: function($scope, $stateParams) {
-            $scope.orderID = $stateParams.orderID;
-        }
-    })
-
-    .state('showsymbol', {
-        url: '/showsymbol/:symbolID',
-        templateUrl: 'views/partials/showsymbol.html',
-        controller: function($scope, $stateParams) {
-            $scope.symbolID = $stateParams.symbolID;
-        }
-    });
-});
