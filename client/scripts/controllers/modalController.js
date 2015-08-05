@@ -21,7 +21,8 @@ app.controller('ModalCtrl', [
       var fullOrder = angular.extend({}, {
         'ticker': tickerID,
         'price': tickerPrice,
-        'orderType': this.orderType
+        'orderType': this.orderType,
+        'orderDate': new Date()
       }, orderData);
 
       /* post to server*/

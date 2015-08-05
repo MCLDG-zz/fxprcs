@@ -21,7 +21,7 @@
                 <img ng-src="{{getFlagForSecondCurrency(item.ticker)}}">
             </td>
             <td class="span2">{{item.price}}</td>
-            <td class="span2">{{item.fulfilDate}}</td>
+            <td class="span2">{{item.fulfilDate | date:"dd-MMM-yy HH:mm:ss"}}</td>
             <td class="span2">{{item.limitPrice}}</td>
             <td class="span2">{{item.units}}</td>
             <td class="span2">{{item.message}}</td>

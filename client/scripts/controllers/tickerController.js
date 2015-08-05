@@ -164,16 +164,7 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
                             " at a price of " + result.order.limitPrice + " or better");
 
                     }
-                    //I spent so much time on this. It seems that the Modal makes a copy of the
-                    //$scope, and if you update this in the Modal it will be lost when the Modal
-                    //closes. So I had to push the order onto the parent scope object to ensure
-                    //it is still there after the Modal close.
-                    //However, in the view (the HTML), I had to refer to it using $parent also
-                    //If I did not use $parent the openOrders array was simply empty
-                    //                $scope.$parent.openOrders.push(result.order);
                     if (result.order.orderType == 'Limit') {
-                        //$scope.pendingOrders.push(result.order);
-                        //$scope.$parent.pendingOrders.push(result.order);
                         // We need to get back the pending order from the DB with it's _id value
                         // For 2 reasons:
                         // 1) Each time we receive a quote, pending orders may be triggered. This
@@ -471,6 +462,10 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
             $scope.balance[0].cashbalance = $scope.balance[0].cashbalance + fundsToDeposit;
             $scope.balance[0].accountvalue = $scope.balance[0].cashbalance + $scope.balance[0].assetvalue;
             $scope.updateBalance();
+            $scope.fundsDepositResult = true;
+            $timeout(function() {
+                $scope.fundsDepositResult = false;
+            }, 7000);
         };
 
         $scope.handleWithdrawFunds = function() {
@@ -479,6 +474,10 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
             $scope.balance[0].cashbalance = $scope.balance[0].cashbalance - fundsToWithdraw;
             $scope.balance[0].accountvalue = $scope.balance[0].cashbalance + $scope.balance[0].assetvalue;
             $scope.updateBalance();
+            $scope.fundsWithdrawResult = true;
+            $timeout(function() {
+                $scope.fundsWithdrawResult = false;
+            }, 7000);
         };
 
         $scope.showChart = function(ticker) {
