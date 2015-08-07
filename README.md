@@ -1,15 +1,22 @@
-## Running the server
+How to prepare this project
 
-1) Open `server.js` and start the app by clicking on the "Run" button in the top menu
+(Note that I am running this on Cloud 9, which already has some of the dependencies installed. You may require
+some manual installation if you find components are missing)
 
-2) Alternatively you can launch the app from the Terminal:
+After cloning the repository, do the following
 
-    $ node server.js
+1) Completely delete the node_modules directory - the contents and the directory itself
+2) Run 'npm install' so the dependencies declared in package.json are installed
 
-Once the server is running, open the project in the shape of 'https://projectname-username.c9.io/'. As you enter your name, watch the Users list (on the left) update. Once you press Enter or Send, the message is shared with all connected clients.
+Populate the database
 
-TODO
-delete pending order - done. Need to add a notification that shows for a short while. (and perhaps a notificatino entry in DB)
-calculate margin and add to balance page. Check margin when opening deal - possiby check on price change (margin calc)
-Order modal not very professional
-write an asset history to mongo and produce an asset chart on balance page.
+1) In a new terminal window execute the script ./start_mongodb
+2) In another terminal window enter the mongo shell by entering 'mongo'Running the server
+3) In the mongo shell, enter the following: 'load('data/loadDataToMongo.js')'. This will load the data into MongoDB
+
+Now run the node server
+
+1) In a terminal window enter 'node server.js'
+
+Now use your browser to go to the home page. Since I'm using Cloud9, this is: https://fxprcs-ui-mcdg.c9.io
+
