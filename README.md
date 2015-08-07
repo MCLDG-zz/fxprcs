@@ -10,13 +10,13 @@ After cloning the repository, do the following
 
 Populate the database
 
-1) In a new terminal window execute the script ./start_mongodb
-2) In another terminal window enter the mongo shell by entering 'mongo'Running the server
-3) In the mongo shell, enter the following: 'load('data/loadDataToMongo.js')'. This will load the data into MongoDB
+1. In a new terminal window execute the script ./start_mongodb
+2. In another terminal window enter the mongo shell by entering 'mongo'Running the server
+3. In the mongo shell, enter the following: 'load('data/loadDataToMongo.js')'. This will load the data into MongoDB
 
 Now run the node server
 
-1) In a terminal window enter 'node server.js'
+1. In a terminal window enter 'node server.js'
 
 Now use your browser to go to the home page. Since I'm using Cloud9, this is: https://fxprcs-ui-mcdg.c9.io
 
@@ -27,7 +27,7 @@ web service and a port must be opened to allow Cloud 9 to access the web service
 will fail when the web service call is made and times out, so I suggest you comment out the 
 web service call. In 'routes/orders.js' comment out the following line:
 
-// addOrderToQuantum(req.body, db, result._id.toHexString());
+` // addOrderToQuantum(req.body, db, result._id.toHexString()); `
 
 
 
