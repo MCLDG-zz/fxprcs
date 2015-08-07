@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+    var soap = require('soap');
 
 /* GET order data */
 router.get('/order', function(req, res) {
@@ -97,7 +98,6 @@ router.post('/delpendingorder', function(req, res) {
  * Get weather data. I used this for testing that nodejs could access an XML web service
  */
 router.get('/getweather', function(req, res) {
-    var soap = require('soap');
     var url = 'http://wsf.cdyne.com/WeatherWS/Weather.asmx?wsdl';
     var args = {
         ZIP: req.query.ZIP
@@ -133,7 +133,6 @@ router.get('/getweather', function(req, res) {
  * Get Quantum dealset number
  */
 router.get('/getQTDealset', function(req, res) {
-    var soap = require('soap');
     var url = 'http://223.197.29.89/TestWebService1/Service1.asmx?wsdl';
     var args = {};
 
@@ -149,7 +148,6 @@ router.get('/getQTDealset', function(req, res) {
  * Get Quantum dealset number
  */
 function getQTDealset() {
-    var soap = require('soap');
     var url = 'http://223.197.29.89/TestWebService1/Service1.asmx?wsdl';
 
     soap.createClient(url, function(err, client) {
@@ -166,9 +164,7 @@ function getQTDealset() {
  * Use a GET to send FX data to Quantum - this is used to test QT is working
  */
 router.get('/postQTFXDeal', function(req, res) {
-    var soap = require('soap');
     var url = 'http://223.197.29.89/TestWebService1/Service1.asmx?wsdl';
-    //var args = {ZIP: req.query.ZIP};
     var args = {
         "DM2FXDealID": "300000001",
         "DealInstrument": "FX Spot",
@@ -203,7 +199,6 @@ router.get('/postQTFXDeal', function(req, res) {
  * Post FX data to Quantum
  */
 router.post('/postQTFXDeal', function(req, res) {
-    var soap = require('soap');
     var url = 'http://223.197.29.89/TestWebService1/Service1.asmx?wsdl';
 
     //Post the quantum record to our FX DB also
@@ -227,12 +222,10 @@ router.post('/postQTFXDeal', function(req, res) {
  *  Actual Cashflow (AC) Entries (at least 2 - one for inflow, one for outflow)
  */
 function addOrderToQuantum(orderData, db, fxOrderID) {
-
-    //Firstly, get the next available Quantum ID
-    var soap = require('soap');
     var url = 'http://223.197.29.89/TestWebService1/Service1.asmx?wsdl';
 
     soap.createClient(url, function(err, client) {
+        //Firstly, get the next available Quantum ID
         client.GetDealSetNo(null, function(err, result) {
             if (err) {
                 console.log("Error getting DealSet No from Quantum. Error code: " + err.response.statusCode + " error: " + err);
@@ -243,7 +236,6 @@ function addOrderToQuantum(orderData, db, fxOrderID) {
                 var dealSetNoResult = result.GetDealSetNoResult;
                 var quantumFXOrder = constructQuantumFXDealObject(orderData, fxOrderID, dealSetNoResult);
                 var quantumACOrders = constructQuantumACDealObjects(orderData, fxOrderID, dealSetNoResult);
-                var soap = require('soap');
                 var url = 'http://223.197.29.89/TestWebService1/Service1.asmx?wsdl';
 
                 //Post the quantum record to our FX DB also
