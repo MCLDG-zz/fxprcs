@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-    var soap = require('soap');
+var soap = require('soap');
 
 /* GET order data */
 router.get('/order', function(req, res) {
@@ -137,10 +137,15 @@ router.get('/getQTDealset', function(req, res) {
     var args = {};
 
     soap.createClient(url, function(err, client) {
-        client.GetDealSetNo(null, function(err, result) {
-            res.send(result);
-            res.end();
-        });
+        if (client === undefined || client == null) {
+            console.log("Cannot add deal to Quantum. Cannot obtain reference to web service");
+        }
+        else {
+            client.GetDealSetNo(null, function(err, result) {
+                res.send(result);
+                res.end();
+            });
+        }
     });
 });
 
@@ -151,12 +156,17 @@ function getQTDealset() {
     var url = 'http://223.197.29.89/TestWebService1/Service1.asmx?wsdl';
 
     soap.createClient(url, function(err, client) {
-        client.GetDealSetNo(null, function(err, result) {
-            if (err)
-                return;
-            else
-                return result;
-        });
+        if (client === undefined || client == null) {
+            console.log("Cannot add deal to Quantum. Cannot obtain reference to web service");
+        }
+        else {
+            client.GetDealSetNo(null, function(err, result) {
+                if (err)
+                    return;
+                else
+                    return result;
+            });
+        }
     });
 }
 
@@ -188,10 +198,15 @@ router.get('/postQTFXDeal', function(req, res) {
     console.log("postQTFXDeal args are: " + args);
 
     soap.createClient(url, function(err, client) {
-        client.CreateFXDeal(args, function(err, result) {
-            res.send(result);
-            res.end();
-        });
+        if (client === undefined || client == null) {
+            console.log("Cannot add deal to Quantum. Cannot obtain reference to web service");
+        }
+        else {
+            client.CreateFXDeal(args, function(err, result) {
+                res.send(result);
+                res.end();
+            });
+        }
     });
 });
 
@@ -208,10 +223,15 @@ router.post('/postQTFXDeal', function(req, res) {
 
     //Then post to Quantum
     soap.createClient(url, function(err, client) {
-        client.CreateFXDeal(req.body, function(err, result) {
-            res.send(result);
-            res.end();
-        });
+        if (client === undefined || client == null) {
+            console.log("Cannot add deal to Quantum. Cannot obtain reference to web service");
+        }
+        else {
+            client.CreateFXDeal(req.body, function(err, result) {
+                res.send(result);
+                res.end();
+            });
+        }
     });
 });
 
@@ -226,94 +246,100 @@ function addOrderToQuantum(orderData, db, fxOrderID) {
 
     soap.createClient(url, function(err, client) {
         //Firstly, get the next available Quantum ID
-        client.GetDealSetNo(null, function(err, result) {
-            if (err) {
-                console.log("Error getting DealSet No from Quantum. Error code: " + err.response.statusCode + " error: " + err);
-                return;
-            }
-            else {
-                //Then construct the JSON message and post the order
-                var dealSetNoResult = result.GetDealSetNoResult;
-                var quantumFXOrder = constructQuantumFXDealObject(orderData, fxOrderID, dealSetNoResult);
-                var quantumACOrders = constructQuantumACDealObjects(orderData, fxOrderID, dealSetNoResult);
-                var url = 'http://223.197.29.89/TestWebService1/Service1.asmx?wsdl';
-
-                //Post the quantum record to our FX DB also
-                var collection = db.get('quantumFXOrders');
-                collection.insert(quantumFXOrder, function(err, result) {});
-
-                //Post the quantum record to our AC DB also
-                var collection = db.get('quantumACOrders');
-                collection.insert(quantumACOrders, function(err, result) {});
-
-                //Then post to Quantum
-                //Remove the MongoDB _id key first - no need to store this
-                delete quantumFXOrder._id;
-                for (var i = 0; i < quantumACOrders.length; i++) {
-                    delete quantumACOrders[i]._id;
+        if (client === undefined || client == null) {
+            console.log("Cannot add deal to Quantum. Cannot obtain reference to web service");
+        }
+        else {
+            client.GetDealSetNo(null, function(err, result) {
+                if (err) {
+                    console.log("Error getting DealSet No from Quantum. Error code: " + err.response.statusCode + " error: " + err);
+                    return;
                 }
-                soap.createClient(url, function(err, client) {
-                    client.CreateFXDeal(quantumFXOrder, function(err, result) {
-                        if (err) {
-                            console.log("Error inserting FX deal into Quantum. Error code: " + err.response.statusCode + " error: " + err);
-                        }
-                        else {
-                            /*
-                             * The Quantum web service may execute successfully but still not insert the
-                             * deal into Quantum. It is necessary to check the actual response - if the
-                             * response is not an empty string, there has been an error. The error
-                             * strings are not intuitive so it will be necessary to look at the Quantum
-                             * web service code to understand what the errors mean
-                             */
-                            if (result.CreateFXDealResult != "") {
-                                console.log("Error inserting FX deal into Quantum. Error code: " + result.CreateFXDealResult);
+                else {
+                    //Then construct the JSON message and post the order
+                    var dealSetNoResult = result.GetDealSetNoResult;
+                    var quantumFXOrder = constructQuantumFXDealObject(orderData, fxOrderID, dealSetNoResult);
+                    var quantumACOrders = constructQuantumACDealObjects(orderData, fxOrderID, dealSetNoResult);
+                    var url = 'http://223.197.29.89/TestWebService1/Service1.asmx?wsdl';
+
+                    //Post the quantum record to our FX DB also
+                    var collection = db.get('quantumFXOrders');
+                    collection.insert(quantumFXOrder, function(err, result) {});
+
+                    //Post the quantum record to our AC DB also
+                    var collection = db.get('quantumACOrders');
+                    collection.insert(quantumACOrders, function(err, result) {});
+
+                    //Then post to Quantum
+                    //Remove the MongoDB _id key first - no need to store this
+                    delete quantumFXOrder._id;
+                    for (var i = 0; i < quantumACOrders.length; i++) {
+                        delete quantumACOrders[i]._id;
+                    }
+                    soap.createClient(url, function(err, client) {
+                        client.CreateFXDeal(quantumFXOrder, function(err, result) {
+                            if (err) {
+                                console.log("Error inserting FX deal into Quantum. Error code: " + err.response.statusCode + " error: " + err);
                             }
-                            //if no errors, insert the AC deals into Quantum
                             else {
-                                client.CreateACDeal(quantumACOrders[0], function(err, result) {
-                                    if (err) {
-                                        console.log("Error inserting first AC deal into Quantum. Error code: " + err.response.statusCode + " error: " + err);
-                                    }
-                                    else {
-                                        /*
-                                         * The Quantum web service may execute successfully but still not insert the
-                                         * deal into Quantum. It is necessary to check the actual response - if the
-                                         * response is not an empty string, there has been an error. The error
-                                         * strings are not intuitive so it will be necessary to look at the Quantum
-                                         * web service code to understand what the errors mean
-                                         */
-                                        if (result.CreateACDealResult != "") {
-                                            console.log("Error inserting first AC deal into Quantum. Error code: " + result.CreateACDealResult);
+                                /*
+                                 * The Quantum web service may execute successfully but still not insert the
+                                 * deal into Quantum. It is necessary to check the actual response - if the
+                                 * response is not an empty string, there has been an error. The error
+                                 * strings are not intuitive so it will be necessary to look at the Quantum
+                                 * web service code to understand what the errors mean
+                                 */
+                                if (result.CreateFXDealResult != "") {
+                                    console.log("Error inserting FX deal into Quantum. Error code: " + result.CreateFXDealResult);
+                                }
+                                //if no errors, insert the AC deals into Quantum
+                                else {
+                                    client.CreateACDeal(quantumACOrders[0], function(err, result) {
+                                        if (err) {
+                                            console.log("Error inserting first AC deal into Quantum. Error code: " + err.response.statusCode + " error: " + err);
                                         }
                                         else {
-                                            client.CreateACDeal(quantumACOrders[1], function(err, result) {
-                                                if (err) {
-                                                    console.log("Error inserting second AC deal into Quantum. Error code: " + err.response.statusCode + " error: " + err);
-                                                }
-                                                else {
-                                                    /*
-                                                     * The Quantum web service may execute successfully but still not insert the
-                                                     * deal into Quantum. It is necessary to check the actual response - if the
-                                                     * response is not an empty string, there has been an error. The error
-                                                     * strings are not intuitive so it will be necessary to look at the Quantum
-                                                     * web service code to understand what the errors mean
-                                                     */
-                                                    if (result.CreateACDealResult != "") {
-                                                        console.log("Error inserting second AC deal into Quantum. Error code: " + result.CreateACDealResult);
+                                            /*
+                                             * The Quantum web service may execute successfully but still not insert the
+                                             * deal into Quantum. It is necessary to check the actual response - if the
+                                             * response is not an empty string, there has been an error. The error
+                                             * strings are not intuitive so it will be necessary to look at the Quantum
+                                             * web service code to understand what the errors mean
+                                             */
+                                            if (result.CreateACDealResult != "") {
+                                                console.log("Error inserting first AC deal into Quantum. Error code: " + result.CreateACDealResult);
+                                            }
+                                            else {
+                                                client.CreateACDeal(quantumACOrders[1], function(err, result) {
+                                                    if (err) {
+                                                        console.log("Error inserting second AC deal into Quantum. Error code: " + err.response.statusCode + " error: " + err);
                                                     }
-                                                }
-                                            });
+                                                    else {
+                                                        /*
+                                                         * The Quantum web service may execute successfully but still not insert the
+                                                         * deal into Quantum. It is necessary to check the actual response - if the
+                                                         * response is not an empty string, there has been an error. The error
+                                                         * strings are not intuitive so it will be necessary to look at the Quantum
+                                                         * web service code to understand what the errors mean
+                                                         */
+                                                        if (result.CreateACDealResult != "") {
+                                                            console.log("Error inserting second AC deal into Quantum. Error code: " + result.CreateACDealResult);
+                                                        }
+                                                    }
+                                                });
 
+                                            }
                                         }
-                                    }
-                                });
+                                    });
 
+                                }
                             }
-                        }
+                        });
                     });
-                });
-            }
-        });
+                }
+
+            });
+        }
     });
 }
 
