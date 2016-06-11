@@ -2,7 +2,7 @@ var appRouter = function(app) {
 
 
 app.get('/', function(req, res) {
-    res.send("Hello World");
+    res.send("Hello World - the Balance API is here. Try GET or POST /balance");
 });
 
 /* GET balance data */

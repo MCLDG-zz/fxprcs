@@ -13,7 +13,6 @@ var db = monk('mongo-main:27017/fxdealing');
 var xml2js = require('xml2js');
 
 var routes = require('./routes/index');
-var balance = require('./routes/balance');
 var orders = require('./routes/orders');
 var users = require('./routes/users');
 var referencedata = require('./routes/ref');
@@ -44,7 +43,6 @@ app.use(function(req, res, next) {
 });
 
 app.use('/', routes);
-app.use('/balance', balance);
 app.use('/orders', orders);
 app.use('/users', users);
 app.use('/ref', referencedata);

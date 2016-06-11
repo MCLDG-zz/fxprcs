@@ -5,15 +5,10 @@ var router = express.Router();
 
 /* GET balance data */
 router.get('/balance', function(req, res) {
-//    var db = req.db;
-//    var collection = db.get('userbalance');
-//    collection.find({}, {}, function(e, docs) {
-//        res.json(docs);
-//    });
-console.log("getting balance: ");
+    console.log("getting balance: ");
     var req_balance = http.get({
-                host: '159.122.251.69',
-                port: 3001,
+                host: 'web-balance',
+                port: 80,
                 path: '/balance'
         }, function(response) {
                 var data = "";
@@ -52,7 +47,7 @@ router.post('/updatebalance', function(req, res) {
     console.log("posting balance: ");
 
   request({
-      url: "http://159.122.251.69:3001/balance",
+      url: "http://web-balance:80/balance",
       method: "POST",
       json: true,   // <--Very important!!!
       body: req.body
@@ -65,8 +60,8 @@ router.post('/updatebalance', function(req, res) {
 router.get('/news', function(req, res) {
     console.log("getting news ");
     var req_news = http.get({
-                host: '159.122.251.69',
-                port: 5000,
+                host: 'web-news',
+                port: 80,
                 path: '/news'
         }, function(response) {
                 var data = "";
