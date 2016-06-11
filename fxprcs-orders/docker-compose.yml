@@ -3,16 +3,16 @@ version: '2'
 services:
 
   node-main:
-    image: mcdg/node-main
-    hostname: node-main
+    image: mcdg/node-order
+    hostname: node-order
     ports:
-      - "3000:3000"
+      - "3002:3000"
 
   mongo-main:
-    image: mcdg/mongo-main
-    hostname: mongo-main
+    image: mcdg/mongo-order
+    hostname: mongo-order
     ports:
-      - "27017:27017"
+      - "27019:27017"
 
   sematext-agent:
     image: 'sematext/sematext-agent-docker:latest'

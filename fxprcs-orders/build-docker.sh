@@ -1,3 +1,3 @@
-docker build -t mcdg/node-main .
+docker build -t mcdg/node-order .
 cd mongo
-docker build -t mcdg/mongo-main .
+docker build -t mcdg/mongo-order .

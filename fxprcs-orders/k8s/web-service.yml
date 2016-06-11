@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
- name: web-main
+ name: web-order
  labels:
-   name: web-main
+   name: web-order
 spec:
  type: LoadBalancer
  ports:
    - port: 80
-     targetPort: 3000
+     targetPort: 3002
      protocol: TCP
  selector:
-   name: web-main
+   name: web-order

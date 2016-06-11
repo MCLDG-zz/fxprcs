@@ -2,28 +2,28 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
  labels:
-   name: mongo-main
- name: mongo-main-controller
+   name: mongo-order
+ name: mongo-order-controller
 spec:
  replicas: 1
  template:
    metadata:
      labels:
-       name: mongo-main
+       name: mongo-order
        component-type: db
    spec:
      containers:
-     - image: asia.gcr.io/fxprcs/fxprcs-mongo-main:v1
-       name: mongo-main
+     - image: asia.gcr.io/fxprcs/fxprcs-mongo-order:v1
+       name: mongo-order
        ports:
-       - name: mongo-main
+       - name: mongo-order
          containerPort: 27017
          hostPort: 27017
        volumeMounts:
-           - name: mongo-main-persistent-storage
+           - name: mongo-order-persistent-storage
              mountPath: /data/db
      volumes:
-       - name: mongo-main-persistent-storage
+       - name: mongo-order-persistent-storage
          gcePersistentDisk:
-           pdName: mongo-main-disk
+           pdName: mongo-order-disk
            fsType: ext4
