@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+ labels:
+   name: web-balance
+ name: web-balance-controller
+spec:
+ replicas: 1
+ template:
+   metadata:
+     labels:
+       name: web-balance
+       component-type: web-server
+   spec:
+     containers:
+     - image: asia.gcr.io/fxprcs/fxprcs-node-balance:v1
+       name: web-balance
+       ports:
+       - containerPort: 3001
+         name: http-server

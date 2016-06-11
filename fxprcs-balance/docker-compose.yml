@@ -1,0 +1,26 @@
+version: '2'
+
+services:
+
+  node-balance:
+    image: mcdg/node-balance
+    hostname: node-balance
+    ports:
+      - "3001:3001"
+
+  mongo-balance:
+    image: mcdg/mongo-balance
+    hostname: mongo-balance
+    ports:
+      - "27018:27017"
+
+  sematext-agent:
+    image: 'sematext/sematext-agent-docker:latest'
+    environment:
+      - LOGSENE_TOKEN=ffb28044-957d-4d1e-b78e-0a1eafb1cdbc
+      - SPM_TOKEN=0f31bb82-a715-44f8-914d-ef6f11b52061
+      - affinity:container!=sematext-agent*
+    privileged: true
+    restart: always
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'

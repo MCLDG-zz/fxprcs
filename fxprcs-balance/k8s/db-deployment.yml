@@ -1,0 +1,29 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+ labels:
+   name: mongo-balance
+ name: mongo-balance-controller
+spec:
+ replicas: 1
+ template:
+   metadata:
+     labels:
+       name: mongo-balance
+       component-type: db
+   spec:
+     containers:
+     - image: asia.gcr.io/fxprcs/fxprcs-mongo-balance:v1
+       name: mongo-balance
+       ports:
+       - name: mongo-balance
+         containerPort: 27017
+         hostPort: 27017
+       volumeMounts:
+           - name: mongo-balance-persistent-storage
+             mountPath: /data/db
+     volumes:
+       - name: mongo-balance-persistent-storage
+         gcePersistentDisk:
+           pdName: mongo-balance-disk
+           fsType: ext4

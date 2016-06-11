@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+ name: web-balance
+ labels:
+   name: web-balance
+spec:
+ type: LoadBalancer
+ ports:
+   - port: 80
+     targetPort: 3001
+     protocol: TCP
+ selector:
+   name: web-balance
