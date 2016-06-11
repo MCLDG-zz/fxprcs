@@ -1,0 +1,35 @@
+<div id="pricequotewidget" >
+  <script type="text/javascript" src="/scripts/controllers/tickerController.js"></script>
+  <script type="text/javascript" src="/scripts/directives/priceQuoteDirective.js"></script>
+  <script>
+    angular.module("pricing");
+  </script>
+
+
+    <table class="table table-striped table-bordered table table-condensed table-responsive">
+      <thead>
+        <tr>
+          <th>
+            <form ng-submit="send()">
+              <div class="input-group">
+                <input type="text" class="input-block-level form-control" ng-model="newticker" placeholder="Ticker">
+                <span class="input-group-btn">
+                  <input type="submit" class="btn btn-primary btn-xs form-control" value="Search">
+                </span>
+              </div>
+            </form>
+          </th>
+          <th class="span2">
+            <a href class="btn btn-success btn-xs" ng-click="showOrderModal(newticker)">Place Order</a>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="item in quotes | filter:newticker" ng-show="newticker">
+          <td class="span2" ng-bind="item.ticker"></td>
+          <td class="span2" ng-bind="item.price"></td>
+          <pre ng-show="orderModalResult">{{orderModalResult}}</pre>
+        </tr>
+      </tbody>
+    </table>
+</div>

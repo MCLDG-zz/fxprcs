@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+ labels:
+   name: news
+ name: news-controller
+spec:
+ replicas: 1
+ template:
+   metadata:
+     labels:
+       name: news
+       component-type: web-server
+   spec:
+     containers:
+     - image: asia.gcr.io/fxprcs/fxprcs-news:v1
+       name: news
+       ports:
+       - containerPort: 5000
+         name: news-server

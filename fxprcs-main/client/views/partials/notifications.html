@@ -1,0 +1,36 @@
+<div ng-init="loadNotifications()">
+</div>
+
+<table class="table table-condensed table-responsive">
+    <thead>
+        <tr>
+            <th colspan="1">Symbol</th>
+            <th colspan="1">Price</th>
+            <th colspan="1">Fulfil Date</th>
+            <th colspan="1">Limit Price</th>
+            <th colspan="1">Units</th>
+            <th colspan="1">Message</th>
+            <th colspan="1"></th>
+        </tr>
+    </thead>
+    <tbody data-ng-repeat='item in notifications' class="list">
+        <tr>
+            <td>
+                <a href="#/showsymbol/{{item.ticker}}" ui-sref="showsymbol({symbolID: item.ticker})" class="span2" ng-bind="item.ticker"></a>
+                <img ng-src="{{getFlagForFirstCurrency(item.ticker)}}">
+                <img ng-src="{{getFlagForSecondCurrency(item.ticker)}}">
+            </td>
+            <td class="span2">{{item.price}}</td>
+            <td class="span2">{{item.fulfilDate | date:"dd-MMM-yy HH:mm:ss"}}</td>
+            <td class="span2">{{item.limitPrice}}</td>
+            <td class="span2">{{item.units}}</td>
+            <td class="span2">{{item.message}}</td>
+            <td class="span1" rowspan="2" style="vertical-align:middle;">
+                <a href class="btn btn-danger btn-xs" ng-click="removeNotification(item._id)" title="Remove Notification">
+                  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                </a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+    

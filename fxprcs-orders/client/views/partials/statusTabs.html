@@ -1,0 +1,49 @@
+<div class="container" >
+
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li>
+      <a href="#openorders" role="tab" data-toggle="tab">
+        <icon class="fa fa-home"></icon> Open Orders
+      </a>
+    </li>
+    <li class="active">
+      <a href="#quotes" role="tab" data-toggle="tab">
+        <i class="fa fa-user"></i> Quotes
+      </a>
+    </li>
+    <li>
+      <a href="#pendingorders" role="tab" data-toggle="tab">
+        <i class="fa fa-envelope"></i> Pending Orders
+      </a>
+    </li>
+    <li>
+      <a href="#notifications" role="tab" data-toggle="tab">
+        <i class="fa fa-cog"></i> Notifications
+      </a>
+    </li>
+    <li>
+      <a href="#chart" role="tab" data-toggle="tab">
+        <i class="fa fa-cog"></i> Chart
+      </a>
+    </li>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div class="tab-pane fade" id="openorders">
+      <div ui-grid="{ data: openorders }" class="grid"></div>
+    </div>
+    <div class="tab-pane fade active in" id="quotes">
+      <div ui-grid="{ data: quotes }" class="grid"></div>
+    </div>
+    <div class="tab-pane fade" id="pendingorders">
+    </div>
+    <div class="tab-pane fade" id="notifications">
+    </div>
+    <div class="tab-pane fade" id="chart">
+    </div>
+  </div>
+    {quotes}
+
+</div>

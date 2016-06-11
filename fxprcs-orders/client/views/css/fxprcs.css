@@ -1,0 +1,295 @@
+.highlight-red {
+    background-color: red;
+}
+.highlight-green {
+    background-color: green;
+}
+
+.highlight-text-red {
+    color: red;
+}
+.highlight-text-green {
+    color: green;
+}
+
+.highlightSelectedRow {
+    background-color:#ff0;
+    color:white;
+    font-weight:bold;
+}
+
+.center-table
+{
+  margin: 0 auto !important;
+  float: none !important;
+}
+
+.pad-table tr td {
+    padding: 3px;  
+}
+
+
+
+.InputAddOn {
+  display: flex;
+}
+
+.InputAddOn-field {
+  flex: 1;
+  /* field styles */
+}
+
+.InputAddOn-item {
+  /* item styles */
+}
+
+.Grid {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.Grid-cell {
+  flex: 1;
+}
+
+.Grid--flexCells > .Grid-cell {
+  display: flex;
+}
+
+.Grid--top {
+  align-items: flex-start;
+}
+
+.Grid--bottom {
+  align-items: flex-end;
+}
+
+.Grid--center {
+  align-items: center;
+}
+
+.Grid--justifyCenter {
+  justify-content: center;
+}
+
+.Grid-cell--top {
+  align-self: flex-start;
+}
+
+.Grid-cell--bottom {
+  align-self: flex-end;
+}
+
+.Grid-cell--center {
+  align-self: center;
+}
+
+.Grid-cell--autoSize {
+  flex: none;
+}
+
+.Grid--fit > .Grid-cell {
+  flex: 1;
+}
+
+.Grid--full > .Grid-cell {
+  flex: 0 0 100%;
+}
+
+.Grid--1of2 > .Grid-cell {
+  flex: 0 0 50%;
+}
+
+.Grid--1of3 > .Grid-cell {
+  flex: 0 0 33.3333%;
+}
+
+.Grid--1of4 > .Grid-cell {
+  flex: 0 0 25%;
+}
+
+@media (break-sm) {
+  .small-Grid--fit > .Grid-cell {
+    flex: 1;
+  }
+  .small-Grid--full > .Grid-cell {
+    flex: 0 0 100%;
+  }
+  .small-Grid--1of2 > .Grid-cell {
+    flex: 0 0 50%;
+  }
+  .small-Grid--1of3 > .Grid-cell {
+    flex: 0 0 33.3333%;
+  }
+  .small-Grid--1of4 > .Grid-cell {
+    flex: 0 0 25%;
+  }
+}
+
+@media (--break-md) {
+  .med-Grid--fit > .Grid-cell {
+    flex: 1;
+  }
+  .med-Grid--full > .Grid-cell {
+    flex: 0 0 100%;
+  }
+  .med-Grid--1of2 > .Grid-cell {
+    flex: 0 0 50%;
+  }
+  .med-Grid--1of3 > .Grid-cell {
+    flex: 0 0 33.3333%;
+  }
+  .med-Grid--1of4 > .Grid-cell {
+    flex: 0 0 25%;
+  }
+}
+
+@media (--break-lg) {
+  .large-Grid--fit > .Grid-cell {
+    flex: 1;
+  }
+  .large-Grid--full > .Grid-cell {
+    flex: 0 0 100%;
+  }
+  .large-Grid--1of2 > .Grid-cell {
+    flex: 0 0 50%;
+  }
+  .large-Grid--1of3 > .Grid-cell {
+    flex: 0 0 33.3333%;
+  }
+  .large-Grid--1of4 > .Grid-cell {
+    flex: 0 0 25%;
+  }
+}
+
+.Grid--gutters {
+  margin: -1em 0 1em -1em;
+}
+.Grid--gutters > .Grid-cell {
+  padding: 1em 0 0 1em;
+}
+
+.Grid--guttersLg {
+  margin: -1.5em 0 1.5em -1.5em;
+}
+.Grid--guttersLg > .Grid-cell {
+  padding: 1.5em 0 0 1.5em;
+}
+
+.Grid--guttersXl {
+  margin: -2em 0 2em -2em;
+}
+.Grid--guttersXl > .Grid-cell {
+  padding: 2em 0 0 2em;
+}
+
+@media (break-sm) {
+  .small-Grid--gutters {
+    margin: -1em 0 1em -1em;
+  }
+  .small-Grid--gutters > .Grid-cell {
+    padding: 1em 0 0 1em;
+  }
+  .small-Grid--guttersLg {
+    margin: -1.5em 0 1.5em -1.5em;
+  }
+  .small-Grid--guttersLg > .Grid-cell {
+    padding: 1.5em 0 0 1.5em;
+  }
+  .small-Grid--guttersXl {
+    margin: -2em 0 2em -2em;
+  }
+  .small-Grid--guttersXl > .Grid-cell {
+    padding: 2em 0 0 2em;
+  }
+}
+
+@media (--break-md) {
+  .med-Grid--gutters {
+    margin: -1em 0 1em -1em;
+  }
+  .med-Grid--gutters > .Grid-cell {
+    padding: 1em 0 0 1em;
+  }
+  .med-Grid--guttersLg {
+    margin: -1.5em 0 1.5em -1.5em;
+  }
+  .med-Grid--guttersLg > .Grid-cell {
+    padding: 1.5em 0 0 1.5em;
+  }
+  .med-Grid--guttersXl {
+    margin: -2em 0 2em -2em;
+  }
+  .med-Grid--guttersXl > .Grid-cell {
+    padding: 2em 0 0 2em;
+  }
+}
+
+@media (--break-lg) {
+  .large-Grid--gutters {
+    margin: -1em 0 1em -1em;
+  }
+  .large-Grid--gutters > .Grid-cell {
+    padding: 1em 0 0 1em;
+  }
+  .large-Grid--guttersLg {
+    margin: -1.5em 0 1.5em -1.5em;
+  }
+  .large-Grid--guttersLg > .Grid-cell {
+    padding: 1.5em 0 0 1.5em;
+  }
+  .large-Grid--guttersXl {
+    margin: -2em 0 2em -2em;
+  }
+  .large-Grid--guttersXl > .Grid-cell {
+    padding: 2em 0 0 2em;
+  }
+}
+
+.Media {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1em;
+}
+
+.Media-figure {
+  margin-right: 1em;
+}
+
+.Media-body {
+  flex: 1;
+}
+.Media-body,
+.Media-body :last-child {
+  margin-bottom: 0;
+}
+
+.Media-title {
+  margin: 0 0 .5em;
+}
+
+.Media--center {
+  align-items: center;
+}
+
+.Media--reverse > .Media-figure {
+  order: 1;
+  margin: 0 0 0 1em;
+}
+
+.Demo--spaced {
+  margin-bottom: 1.5em;
+}
+.Demo {
+  width: 100%;
+  padding: .8em 1em 0;
+  background: rgba(147,128,108,.1);
+  border-radius: 3px;
+}
+*, *::after, *::before {
+  box-sizing: border-box;
+}
+
