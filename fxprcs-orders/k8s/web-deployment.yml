@@ -13,7 +13,7 @@ spec:
        component-type: web-server
    spec:
      containers:
-     - image: asia.gcr.io/fxprcs/fxprcs-node-order:v1
+     - image: asia.gcr.io/fxprcs/fxprcs-node-order:v8
        name: web-order
        ports:
        - containerPort: 3000

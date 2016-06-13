@@ -1,3 +1,8 @@
+var kafka = require('kafka-node'),
+     Producer = kafka.Producer,
+     client = new kafka.Client('104.155.231.216:2181'),
+     producer = new Producer(client);
+
 var appRouter = function(app) {
 
 app.get('/', function(req, res) {
@@ -29,6 +34,7 @@ app.get('/pendingorder', function(req, res) {
 app.post('/order', function(req, res) {
     var db = req.db;
     var collection = db.get('userorders');
+    console.log('posting order: ' + req.body);
     collection.insert(req.body, function(err, result) {
         if (err) return;
         res.send(
@@ -39,6 +45,14 @@ app.post('/order', function(req, res) {
             }
         );
     });
+	//publish to kafka
+	kafka_payload = [
+		{ topic: 'fxorder', messages: req.body, partition: 0 },
+	];
+	producer.send(kafka_payload, function(err, data){
+		console.log(data, err)
+	});
+
 });
 
 /*

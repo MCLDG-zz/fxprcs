@@ -13,7 +13,7 @@ spec:
        component-type: web-server
    spec:
      containers:
-     - image: asia.gcr.io/fxprcs/fxprcs-node-main:v4
+     - image: asia.gcr.io/fxprcs/fxprcs-node-main:v7
        name: web-main
        ports:
        - containerPort: 3000

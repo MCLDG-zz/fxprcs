@@ -2,6 +2,7 @@ var http = require('http');
 var express = require('express');
 var router = express.Router();
 var soap = require('soap');
+var request = require('request');
 var kafka = require('kafka-node'),
      Producer = kafka.Producer,
      client = new kafka.Client('104.155.239.44:2181'),

@@ -64,7 +64,7 @@ var FETCH_INTERVAL = 3000;
 var NEWS_FETCH_INTERVAL = 30000;
 var kafka = require('kafka-node'),
      Producer = kafka.Producer,
-     client = new kafka.Client('104.155.239.44:2181'),
+     client = new kafka.Client('104.155.231.216:2181'),
      producer = new Producer(client);
 
 io.on('connection', function(socket) {
@@ -210,12 +210,12 @@ function sendFXQuoteToClients(socket, ticker) {
 				socket.emit('quote', quote);
 
 				//publish to kafka
-				kafka_payload = [
-         				{ topic: 'pricequote', messages: quote, partition: 0 },
-     				];
-				producer.send(kafka_payload, function(err, data){
-         				console.log(data)
-     				});
+	//			kafka_payload = [
+       //  				{ topic: 'pricequote', messages: quote, partition: 0 },
+     //				];
+//				producer.send(kafka_payload, function(err, data){
+  //       				console.log(data)
+    // 				});
 			}
 		});
 	});
