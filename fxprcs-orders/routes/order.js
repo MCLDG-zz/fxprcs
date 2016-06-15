@@ -29,12 +29,12 @@ app.get('/pendingorder', function(req, res) {
 });
 
 /*
- * POST to userorder.
+ * Store the Order and publish to Kafka.
  */
 app.post('/order', function(req, res) {
     var db = req.db;
     var collection = db.get('userorders');
-    console.log('posting order: ' + req.body);
+    console.log('received posted order. Storing in DB and publishing to kafka: %j', req.body);
     collection.insert(req.body, function(err, result) {
         if (err) return;
         res.send(
@@ -46,6 +46,7 @@ app.post('/order', function(req, res) {
         );
     });
 	//publish to kafka
+	console.log('publishing order to Kafka');
 	kafka_payload = [
 		{ topic: 'fxorder', messages: req.body, partition: 0 },
 	];

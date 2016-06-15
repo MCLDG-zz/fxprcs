@@ -1,0 +1,26 @@
+version: '2'
+
+services:
+
+  node-main:
+    image: mcdg/node-main
+    hostname: node-main
+    ports:
+      - "3000:3000"
+
+  mongo-main:
+    image: mcdg/mongo-main
+    hostname: mongo-main
+    ports:
+      - "27017:27017"
+
+  sematext-agent:
+    image: 'sematext/sematext-agent-docker:latest'
+    environment:
+      - LOGSENE_TOKEN=ffb28044-957d-4d1e-b78e-0a1eafb1cdbc
+      - SPM_TOKEN=0f31bb82-a715-44f8-914d-ef6f11b52061
+      - affinity:container!=sematext-agent*
+    privileged: true
+    restart: always
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'

@@ -43,18 +43,18 @@ router.get('/balance', function(req, res) {
 });
 
 /* Update balance */
-router.post('/updatebalance', function(req, res) {
-    console.log("posting balance: ");
-
-  request({
-      url: "http://web-balance:80/balance",
-      method: "POST",
-      json: true,   // <--Very important!!!
-      body: req.body
-  }, function (error, response, body){
-      console.log(response);
-  });
-});
+//router.post('/updatebalance', function(req, res) {
+//    console.log("posting balance: ");
+//
+//  request({
+//      url: "http://web-balance:80/balance",
+//      method: "POST",
+//      json: true,   // <--Very important!!!
+//      body: req.body
+//  }, function (error, response, body){
+//      console.log(response);
+//  });
+//});
 
 /* GET news */
 router.get('/news', function(req, res) {

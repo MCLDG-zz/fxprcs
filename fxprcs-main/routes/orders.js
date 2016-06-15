@@ -3,10 +3,6 @@ var express = require('express');
 var router = express.Router();
 var soap = require('soap');
 var request = require('request');
-var kafka = require('kafka-node'),
-     Producer = kafka.Producer,
-     client = new kafka.Client('104.155.239.44:2181'),
-     producer = new Producer(client);
 
 /* GET order data */
 router.get('/order', function(req, res) {
@@ -87,7 +83,7 @@ router.get('/pendingorder', function(req, res) {
  * POST to userorder.
  */
 router.post('/addorder', function(req, res) {
-    console.log("posting order: ");
+  console.log("posting order to Order service: %j ", req.body);
 
   request({
       url: "http://web-order:80/order",

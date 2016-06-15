@@ -12,9 +12,14 @@ spec:
        name: web-balance
        component-type: web-server
    spec:
-     containers:
-     - image: asia.gcr.io/fxprcs/fxprcs-node-balance:v1
-       name: web-balance
+     containers: 
+     - name: web-balance
+       image: asia.gcr.io/fxprcs/fxprcs-node-balance:v4
        ports:
        - containerPort: 3001
+         name: http-server
+     - name: web-balance-sidecar
+       image: asia.gcr.io/fxprcs/fxprcs-node-balance-sidecar:v1
+       ports:
+       - containerPort: 3003
          name: http-server

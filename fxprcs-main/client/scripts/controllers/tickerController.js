@@ -219,9 +219,9 @@ app.controller('tickerCtrl', ['$scope', '$timeout', '$compile', '$http', '$state
         };
 
         $scope.updateBalance = function() {
-            var httpReq = $http.post('/users/updatebalance', $scope.balance[0]).
-            success(function(data, status, headers, config) {}).
-            error(function(data, status, headers, config) {});
+        //    var httpReq = $http.post('/users/updatebalance', $scope.balance[0]).
+        //    success(function(data, status, headers, config) {}).
+        //    error(function(data, status, headers, config) {});
         };
 
         $scope.loadNews = function() {

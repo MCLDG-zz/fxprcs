@@ -1,5 +1,7 @@
 cd fxprcs-balance/
 ./build-docker.sh
+cd ../fxprcs-balance-sidecar/
+./build-docker.sh
 cd ../fxprcs-main/
 ./build-docker.sh
 cd ../fxprcs-news/

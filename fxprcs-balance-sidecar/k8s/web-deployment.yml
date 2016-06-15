@@ -2,19 +2,19 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
  labels:
-   name: web-order
- name: web-order-controller
+   name: web-main
+ name: web-main-controller
 spec:
  replicas: 1
  template:
    metadata:
      labels:
-       name: web-order
+       name: web-main
        component-type: web-server
    spec:
      containers:
-     - image: asia.gcr.io/fxprcs/fxprcs-node-order:v10
-       name: web-order
+     - image: asia.gcr.io/fxprcs/fxprcs-node-main:v7
+       name: web-main
        ports:
        - containerPort: 3000
          name: http-server

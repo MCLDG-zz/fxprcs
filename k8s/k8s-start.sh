@@ -1,3 +1,5 @@
+../kafka/kafka-start.sh
+
 ../fxprcs-balance/k8s/disk-create.sh
 kubectl create -f ../fxprcs-balance/k8s/db-service.yml
 kubectl create -f ../fxprcs-balance/k8s/db-deployment.yml

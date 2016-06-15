@@ -16,3 +16,4 @@ kubectl delete -f ../fxprcs-main/k8s/web-service.yml
 kubectl delete -f ../fxprcs-main/k8s/web-deployment.yml
 # ../fxprcs-main/k8s/disk-delete.sh
 
+../kafka/kafka-stop.sh
