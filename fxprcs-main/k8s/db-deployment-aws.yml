@@ -1,0 +1,31 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+ labels:
+   name: mongo-main
+ name: mongo-main-controller
+spec:
+ replicas: 1
+ template:
+   metadata:
+     labels:
+       name: mongo-main
+       component-type: db
+   spec:
+     containers:
+     - image: 185711092606.dkr.ecr.us-west-2.amazonaws.com/cpa/aml_fxprcs-mongo-main:v1
+       name: mongo-main
+       ports:
+       - name: mongo-main
+         containerPort: 27017
+         hostPort: 27017
+       volumeMounts:
+           - name: mongo-main-persistent-storage
+             mountPath: /data/db
+     volumes:
+       - name: mongo-main-persistent-storage
+         awsElasticBlockStore:
+           volumeID: vol-8b80243e
+           fsType: ext4
+     nodeSelector:
+         failure-domain.beta.kubernetes.io/zone: us-west-2a

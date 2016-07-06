@@ -1,0 +1,32 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+ labels:
+   name: mongo-balance
+ name: mongo-balance-controller
+spec:
+ replicas: 1
+ template:
+   metadata:
+     labels:
+       name: mongo-balance
+       component-type: db
+   spec:
+     containers:
+     - image: 185711092606.dkr.ecr.us-west-2.amazonaws.com/cpa/aml_fxprcs-mongo-balance:v1
+       name: mongo-balance
+       ports:
+       - name: mongo-balance
+         containerPort: 27017
+         hostPort: 27017
+       volumeMounts:
+           - name: mongo-balance-persistent-storage
+             mountPath: /data/db
+     volumes:
+       - name: mongo-balance-persistent-storage
+         awsElasticBlockStore:
+           volumeID: vol-8e56f23b
+           fsType: ext4
+     nodeSelector:
+         failure-domain.beta.kubernetes.io/zone: us-west-2a
+

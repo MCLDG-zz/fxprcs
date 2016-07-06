@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+ labels:
+   name: web-balance
+ name: web-balance-controller
+spec:
+ replicas: 1
+ template:
+   metadata:
+     labels:
+       name: web-balance
+       component-type: web-server
+   spec:
+     containers: 
+     - name: web-balance
+       image: 185711092606.dkr.ecr.us-west-2.amazonaws.com/cpa/aml_fxprcs-node-balance:v1
+       ports:
+       - containerPort: 3001
+         name: http-server
+     - name: web-balance-sidecar
+       image: 185711092606.dkr.ecr.us-west-2.amazonaws.com/cpa/aml_fxprcs-node-balance-sidecar:v3
+       ports:
+       - containerPort: 3003
+         name: http-server

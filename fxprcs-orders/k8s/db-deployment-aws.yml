@@ -1,0 +1,32 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+ labels:
+   name: mongo-order
+ name: mongo-order-controller
+spec:
+ replicas: 1
+ template:
+   metadata:
+     labels:
+       name: mongo-order
+       component-type: db
+   spec:
+     containers:
+     - image: 185711092606.dkr.ecr.us-west-2.amazonaws.com/cpa/aml_fxprcs-mongo-order:v1
+       name: mongo-order
+       ports:
+       - name: mongo-order
+         containerPort: 27017
+         hostPort: 27017
+       volumeMounts:
+           - name: mongo-order-persistent-storage
+             mountPath: /data/db
+     volumes:
+       - name: mongo-order-persistent-storage
+         awsElasticBlockStore:
+           volumeID: vol-972c8822
+           fsType: ext4
+     nodeSelector:
+         failure-domain.beta.kubernetes.io/zone: us-west-2a
+
