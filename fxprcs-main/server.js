@@ -73,6 +73,7 @@ io.on('connection', function(socket) {
 
 	socket.on('ticker', function(msg) {
 		var ticker = String(msg || '');
+		console.log("Request to provide quotes for new ticker: " + ticker);
 		trackTicker(socket, ticker);
 	});
 
@@ -115,10 +116,10 @@ function trackTicker(socket, ticker) {
 	}, FETCH_INTERVAL);
 
 	//Send news on startup and every N seconds
-	sendFXNewsToClients(socket);
-	var timerNews = setInterval(function() {
-		sendFXNewsToClients(socket);
-	}, NEWS_FETCH_INTERVAL);
+	//sendFXNewsToClients(socket);
+	//var timerNews = setInterval(function() {
+	//	sendFXNewsToClients(socket);
+	//}, NEWS_FETCH_INTERVAL);
 
 	socket.on('disconnect', function() {
 		clearInterval(timer);
@@ -199,6 +200,7 @@ function sendFXQuoteToClients(socket, ticker) {
 				if (!data_object.query.results) {
 					return;
 				}
+				console.log("Sending quote to client for ticker: " + ticker);
 				var quote = {};
 				quote.ticker = data_object.query.results.rate.id;
 				quote.bid = data_object.query.results.rate.Bid;

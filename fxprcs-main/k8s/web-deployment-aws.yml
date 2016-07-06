@@ -13,7 +13,7 @@ spec:
        component-type: web-server
    spec:
      containers:
-     - image: 185711092606.dkr.ecr.us-west-2.amazonaws.com/cpa/aml_fxprcs-node-main:v1
+     - image: 185711092606.dkr.ecr.us-west-2.amazonaws.com/cpa/aml_fxprcs-node-main:v2
        name: web-main
        ports:
        - containerPort: 3000
