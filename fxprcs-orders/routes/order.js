@@ -60,13 +60,14 @@ app.post('/order', function(req, res) {
 	//});
 
 //publish to AWS SQS
+//based on example: http://www.bennadel.com/blog/2792-shedding-the-monolithic-application-with-aws-simple-queue-service-sqs-and-node-js.htm
 // Create an instance of our SQS Client.
 var sqs = new aws.SQS({
-    region: "us-west-2",
+    region: "ap-southeast-1",
     accessKeyId: process.env.AWS_SECRET_ACCESS_KEYID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     params: {
-        QueueUrl: "https://sqs.us-west-2.amazonaws.com/185711092606/fxprcs-orders"
+        QueueUrl: "https://sqs.ap-southeast-1.amazonaws.com/921141745046/fxprcs-orders"
     }
 });
 var sendMessage = Q.nbind( sqs.sendMessage, sqs );

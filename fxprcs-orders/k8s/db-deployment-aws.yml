@@ -13,7 +13,7 @@ spec:
        component-type: db
    spec:
      containers:
-     - image: 185711092606.dkr.ecr.us-west-2.amazonaws.com/cpa/aml_fxprcs-mongo-order:v1
+     - image: 921141745046.dkr.ecr.us-west-2.amazonaws.com/cpa/aml_fxprcs-mongo-order:v1
        name: mongo-order
        ports:
        - name: mongo-order
@@ -25,8 +25,8 @@ spec:
      volumes:
        - name: mongo-order-persistent-storage
          awsElasticBlockStore:
-           volumeID: vol-972c8822
+           volumeID: vol-0b9c43a2b33dea7a3
            fsType: ext4
      nodeSelector:
-         failure-domain.beta.kubernetes.io/zone: us-west-2a
+         failure-domain.beta.kubernetes.io/zone: ap-southeast-1a
 

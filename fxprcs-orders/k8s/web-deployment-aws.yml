@@ -13,7 +13,7 @@ spec:
        component-type: web-server
    spec:
      containers:
-     - image: 185711092606.dkr.ecr.us-west-2.amazonaws.com/cpa/aml_fxprcs-node-order:v6
+     - image: 921141745046.dkr.ecr.us-west-2.amazonaws.com/cpa/aml_fxprcs-node-order:v3
        name: web-order
        ports:
        - containerPort: 3000

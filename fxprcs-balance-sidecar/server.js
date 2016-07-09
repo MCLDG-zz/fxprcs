@@ -59,11 +59,11 @@ consumer.on('error', function (err) {
 //publish to AWS SQS
 // Create an instance of our SQS Client.
 var sqs = new aws.SQS({
-    region: "us-west-2",
+    region: "ap-southeast-1",
     accessKeyId: process.env.AWS_SECRET_ACCESS_KEYID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     params: {
-        QueueUrl: "https://sqs.us-west-2.amazonaws.com/185711092606/fxprcs-orders"
+        QueueUrl: "https://sqs.ap-southeast-1.amazonaws.com/921141745046/fxprcs-orders"
     }
 });
 var receiveMessage = Q.nbind( sqs.receiveMessage, sqs );

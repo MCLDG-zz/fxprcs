@@ -14,12 +14,24 @@ spec:
    spec:
      containers: 
      - name: web-balance
-       image: 185711092606.dkr.ecr.us-west-2.amazonaws.com/cpa/aml_fxprcs-node-balance:v1
+       image: 921141745046.dkr.ecr.us-west-2.amazonaws.com/cpa/aml_fxprcs-node-balance:v1
        ports:
        - containerPort: 3001
          name: http-server
      - name: web-balance-sidecar
-       image: 185711092606.dkr.ecr.us-west-2.amazonaws.com/cpa/aml_fxprcs-node-balance-sidecar:v3
+       image: 921141745046.dkr.ecr.us-west-2.amazonaws.com/cpa/aml_fxprcs-node-balance-sidecar:v2
        ports:
        - containerPort: 3003
          name: http-server
+       env:
+        - name: AWS_SECRET_ACCESS_KEYID
+          valueFrom:
+            secretKeyRef:
+              name: aws-keys
+              key: accesskeyid
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aws-keys
+              key: secretaccesskey
+
